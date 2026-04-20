@@ -1,0 +1,7 @@
+django
+django-rest-framework
+django-jazzmin
+django-cors-headers
+python-dotenv
+Pillow
+

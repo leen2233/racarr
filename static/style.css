@@ -1,0 +1,152 @@
+:root{
+  --themeColor: #ed4a4a; 
+}
+
+* {
+  box-sizing: border-box;
+  font-family: 'Roboto', 'open sans', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+}
+
+html {
+  overflow-y: hidden;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+}
+
+.header {
+  width: 100%;
+  height: 60px;
+  background-color: #2a2a2a;
+  margin: 0;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h2 {
+  margin: 0;
+  color: white;
+}
+
+.body {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.navbar {
+  width: 210px;
+  height: 100%;
+  background-color: #2a2a2a;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.navbar-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar-group.active {
+  border-left: 3px solid var(--themeColor)
+}
+
+.navbar div {
+  cursor: pointer;
+}
+
+.navbar-item {
+  color: white;
+  height: 50px;
+  width: 100%;
+  text-align: left;
+  vertical-align: middle;
+  font-size: 14px;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.navbar-item:hover {
+  color: var(--themeColor);
+}
+
+.navbar-item i {
+  padding-top: 2px;
+  font-size: 18px;
+}
+
+.navbar-item p {
+  font-size: 14px;
+  padding-left: 10px;
+}
+
+.navbar-item.active {
+  background-color: #333333;
+  color: var(--themeColor);
+}
+
+.navbar-child {
+  padding-left: 40px;
+}
+
+.navbar-child {
+  display: none;
+}
+
+.navbar-group.active .navbar-child {
+  display: block;
+}
+
+.content {
+  width: 100%;
+  height: 100%;
+  background-color: #202020;
+}
+
+.logo-search {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 80px;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+}
+
+.search-bar input {
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid white;
+  color: white;
+  transition: color 0.3s ease-out;
+  width: 200px;
+  font-size: 14px;
+  padding: 5px;
+}
+
+.search-bar input:focus {
+  outline: 0;
+  border-bottom-color: transparent;
+}
+
+
+.header .profile {
+  color: white;
+  font-size: 14px;
+}
+
+.header .profile:hover {
+  color: var(--themeColor);
+}
+
