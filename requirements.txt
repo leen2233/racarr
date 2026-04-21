@@ -4,4 +4,6 @@ django-jazzmin
 django-cors-headers
 python-dotenv
 Pillow
-
+cloudscraper
+bs4
+redis

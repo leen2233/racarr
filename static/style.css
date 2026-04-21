@@ -9,11 +9,15 @@
 
 html {
   overflow-y: hidden;
+  overflow-x: hidden;
+  height: 100%;
 }
 
 body {
   padding: 0;
   margin: 0;
+  height: 100%;
+  padding-bottom: 50px;
 }
 
 .header {
@@ -108,6 +112,7 @@ body {
   width: 100%;
   height: 100%;
   background-color: #202020;
+  overflow-x: scroll;
 }
 
 .logo-search {
@@ -148,5 +153,122 @@ body {
 
 .header .profile:hover {
   color: var(--themeColor);
+}
+
+/*  Discover page */
+
+#discover-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  padding: 20px;
+  gap: 20px;
+}
+
+.discover-item {
+  width: 48%;
+  height: 220px;
+  background-color: #1b1b1b;
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+}
+
+.discover-item img {
+  height: 100%;
+}
+
+.discover-item h3 {
+  color: white;
+  margin: 0;
+  margin-bottom: 10px;
+}
+
+.discover-item .info {
+  display: flex;
+  color: white;
+  gap: 10px;
+  align-items: center;
+}
+
+.loading {
+  color: grey;
+  margin-left: 46%;
+  margin-top: 100px;
+}
+
+.loading,
+.loading div {
+  box-sizing: border-box;
+}
+.loading {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.loading div {
+  position: absolute;
+  border: 4px solid currentColor;
+  opacity: 1;
+  border-radius: 50%;
+  animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+.loading div:nth-child(2) {
+  animation-delay: -0.5s;
+}
+@keyframes lds-ripple {
+  0% {
+    top: 36px;
+    left: 36px;
+    width: 8px;
+    height: 8px;
+    opacity: 0;
+  }
+  4.9% {
+    top: 36px;
+    left: 36px;
+    width: 8px;
+    height: 8px;
+    opacity: 0;
+  }
+  5% {
+    top: 36px;
+    left: 36px;
+    width: 8px;
+    height: 8px;
+    opacity: 1;
+  }
+  100% {
+    top: 0;
+    left: 0;
+    width: 80px;
+    height: 80px;
+    opacity: 0;
+  }
+}
+
+.error {
+  background-color: #590909;
+  border: 1px solid #b30000;
+  color: white;
+  width: 100%;
+  padding: 15px 20px;
+}
+
+.error p {
+  display: inline;
+}
+
+.error button {
+  display: inline-block;
+  background-color: transparent;
+  text-decoration: underline;
+  border: none;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
 }
 

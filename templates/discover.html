@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load tags %}
+{%block discover_active%}active{%endblock%}
+{%block home_group%}active{%endblock%}
+
+{% block content %}
+<div id="discover-container">
+  <div class="loading" id="loading" style="display: none"><div></div><div></div></div>
+  <div class="error" id="error" style="display: none">
+    <p>Couldn't fetch discover data. </p><button onClick="fetchDiscoverData()">Retry</button>
+  </div>
+  {% if discover_data %}
+    {% for item in discover_data %}
+      <div class="discover-item">
+        <img src="{{item.cover}}" loading='lazy'>
+        <div>
+          <h3>{{item.name}}</h3>
+          <div class="info"><i class="fa fa-calendar"></i>{{item.year}}</div>
+          <div class="info"><i class="fa fa-tags"></i>{{ item.genres | format_genres }}</div>
+          <div class="info"><i class="fa fa-building"></i>{{item.publisher}}</div>
+          <div class="info"><i class="fa fa-files-o"></i>{{item.total_issues}}</div>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        fetchDiscoverData();
+      })
+    </script>
+  {% endif %}
+</div>
+
+<script>
+  async function fetchDiscoverData() {
+    document.getElementById("loading").style.display = "block";
+    document.getElementById("error").style.display = "none";
+
+    const url = "/api/discover";
+    try {
+      const response = await fetch(url);
+      document.getElementById("loading").style.display = "none";
+      
+      if (!response.ok) {
+        document.getElementById("error").style.display = "block";
+        throw new Error(response.error);
+      }
+
+      const result = await response.json();
+      const container = document.getElementById("discover-container");
+      container.innerHTML = "";
+
+      result.forEach((item) => {
+        container.innerHTML += `
+          <div class="discover-item">
+            <img src="${item.cover}" loading='lazy'>
+            <div>
+              <h3>${item.name}}</h3>
+            </div>
+          </div>
+        `;
+      })
+    } catch (error) {
+      console.error(error);
+    }
+  }
+</script>
+
+{% endblock %}

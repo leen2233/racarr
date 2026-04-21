@@ -1,4 +1,5 @@
 {% load static %}
+<!DOCTYPE html>
 <html>
   <head>
     <title>Racarr</title>
@@ -20,8 +21,8 @@
       <div class="navbar">
         <div class="navbar-group {%block home_group%}{%endblock%}">
           <a href="{% url 'home' %}" class="navbar-item {%block home_active%}{%endblock%}"><i class="fa fa-book" aria-hidden="true"></i><p>Comics</p></a>
-          <a href="{%url 'add_new' %}" class="navbar-item navbar-child {%block add_new_active%}{%endblock%}">Add New</a>
-          <div class="navbar-item navbar-child {%block discover_active%}{%endblock%}">Discover</div>
+          <a href="{% url 'add_new' %}" class="navbar-item navbar-child {%block add_new_active%}{%endblock%}">Add New</a>
+          <a href="{% url 'discover' %}" class="navbar-item navbar-child {%block discover_active%}{%endblock%}">Discover</a>
         </div>
         <div class="navbar-group">
           <div class="navbar-item {%block activity_active%}{%endblock%}"><i class="fa fa-clock-o" aria-hidden="true"></i><p>Activity</p></div>
