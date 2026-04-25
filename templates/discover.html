@@ -15,10 +15,12 @@
         <img src="{{item.cover}}" loading='lazy'>
         <div>
           <h3>{{item.name}}</h3>
-          <div class="info"><i class="fa fa-calendar"></i>{{item.year}}</div>
-          <div class="info"><i class="fa fa-tags"></i>{{ item.genres | format_genres }}</div>
-          <div class="info"><i class="fa fa-building"></i>{{item.publisher}}</div>
-          <div class="info"><i class="fa fa-files-o"></i>{{item.total_issues}}</div>
+          <div class="info-container">
+            <div class="info"><i class="fa fa-calendar"></i>{{item.year}}</div>
+            <div class="info"><i class="fa fa-building"></i>{{item.publisher}}</div>
+            <div class="info"><i class="fa fa-tags"></i>{{ item.genres | format_genres }}</div>
+            <div class="info"><i class="fa fa-files-o"></i>{{item.total_issues}} issues</div>
+          </div>
         </div>
       </div>
     {% endfor %}
@@ -56,10 +58,12 @@
             <img src="${item.cover}" loading='lazy'>
             <div>
               <h3>${item.name}</h3>
-              <div class="info"><i class="fa fa-calendar"></i>${item.year}</div>
-              <div class="info"><i class="fa fa-tags"></i>${formatGenres(item.genres)}</div>
-              <div class="info"><i class="fa fa-building"></i>${item.publisher}</div>
-              <div class="info"><i class="fa fa-files-o"></i>${item.total_issues}</div>
+              <div class="info-container">
+                <div class="info"><i class="fa fa-calendar"></i>${item.year}</div>
+                <div class="info"><i class="fa fa-building"></i>${item.publisher}</div>
+                <div class="info"><i class="fa fa-tags"></i>${formatGenres(item.genres)}</div>
+                <div class="info"><i class="fa fa-files-o"></i>${item.total_issues} issues</div>
+              </div>
             </div>
           </div>
         `;
