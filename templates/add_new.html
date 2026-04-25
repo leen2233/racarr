@@ -2,3 +2,101 @@
 {%block add_new_active%}active{%endblock%}
 {%block home_group%}active{%endblock%}
 
+{% block content %}
+
+<div class="search-container">
+  <div class="search-bar">
+    <div class="search-icon"><i class="fa fa-search"></i></div>
+    <input id="searchInput" placeHolder="e.g. Invincible, The Boys" />
+    <div class="clear-icon" onClick="clearInput()"><i class="fa fa-times"></i></div>
+  </div>
+  <div id="search-helper">
+    It's easy to add a new comic, just start typing the name of the comic you want to add
+  </div>
+  
+  <div id="search-comics-container"></div>
+
+  <div class="loading" id="loading" style="display: none"><div></div><div></div></div>
+  <div class="error" id="error" style="display: none">
+    <p>Couldn't fetch discover data. </p><button onClick="fetchDiscoverData()">Retry</button>
+  </div>
+</div>
+
+<script>
+  function clearInput() {
+    document.getElementById("query").value = "";
+  }
+
+  async function handleSearch() {
+    const query = document.getElementById("searchInput").value;
+    document.getElementById("search-helper").style.display = "none";
+    document.getElementById("loading").style.display = "block";
+
+    if (query == "") {
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("loading").style.display = "block";
+      return
+    }
+
+    const url = "/api/search-remote?query=" + query;
+    try {
+      const response = await fetch(url);
+      document.getElementById("loading").style.display = "none";
+      
+      if (!response.ok) {
+        document.getElementById("error").style.display = "block";
+        throw new Error(response.error);
+      }
+
+      const result = await response.json();
+      const container = document.getElementById("search-comics-container");
+      container.innerHTML = "";
+
+      result.forEach((item) => {
+        container.innerHTML += `
+          <div class="search-comic-item">
+            <img src="${item.cover}" loading='lazy'>
+            <div>
+              <div class="title">${item.name} <span>(${item.year})</span></div>
+              <div class="info-container">
+                <div class="info"><i class="fa fa-tags"></i>${formatGenres(item.genres)}</div>
+                <div class="info"><i class="fa fa-building"></i>${item.publisher}</div>
+                <div class="info"><i class="fa fa-files-o"></i>${item.total_issues} Issues</div>
+              </div>
+            </div>
+          </div>
+        `;
+      })
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const debouncedSearch = debounce(handleSearch, 1000);
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', (e) => {
+    const inputValue = e.target.value.trim();
+    debouncedSearch(inputValue);
+  });
+
+  function debounce(func, delay) {
+    let timeoutId;
+    return function(...args) {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        func.apply(this, args);
+      }, delay);
+    };
+  }
+
+  function formatGenres(value) {
+    let text = value[0];
+    for (let i=1; i<value.length; i++){
+      text += `, ${value[i]}`;
+    }
+    return text;
+  }
+
+</script>
+{% endblock %}
+

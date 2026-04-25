@@ -55,7 +55,11 @@
           <div class="discover-item">
             <img src="${item.cover}" loading='lazy'>
             <div>
-              <h3>${item.name}}</h3>
+              <h3>${item.name}</h3>
+              <div class="info"><i class="fa fa-calendar"></i>${item.year}</div>
+              <div class="info"><i class="fa fa-tags"></i>${formatGenres(item.genres)}</div>
+              <div class="info"><i class="fa fa-building"></i>${item.publisher}</div>
+              <div class="info"><i class="fa fa-files-o"></i>${item.total_issues}</div>
             </div>
           </div>
         `;
@@ -63,6 +67,14 @@
     } catch (error) {
       console.error(error);
     }
+  }
+
+  function formatGenres(value) {
+    let text = value[0];
+    for (let i=1; i<value.length; i++){
+      text += `, ${value[i]}`;
+    }
+    return text;
   }
 </script>
 

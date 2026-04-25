@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import home, add_new, settings, discover
-from .api import get_discover_data
+from .api import get_discover_data, search_remote
 
 urlpatterns = [
     path("", home, name="home"),
@@ -11,4 +11,5 @@ urlpatterns = [
 
     # API
     path('api/discover', get_discover_data),
+    path('api/search-remote', search_remote),
 ]

@@ -17,7 +17,7 @@ def settings(request):
 def discover(request):
     # if discover data available at cache, directly pass to template
     context = {
-        "discover_data": cache.get('discover-data')
+        "discover_data": cache.get('discover-dataa')
     }
 
     return render(request, "discover.html", context=context)
