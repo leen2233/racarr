@@ -319,25 +319,49 @@ body {
   min-width: 170px;
 }
 
-.search-comic-item .title {
+.search-comic-data {
+  width: 100%;
+}
+
+.search-comic-item .title-row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+  flex-direction: row;
+}
+
+.search-comic-item .title-row .title {
   color: white;
   margin: 0;
   margin-bottom: 10px;
   font-size: 36px;
 }
 
+.search-comic-item .title-row a {
+  color: white;
+  text-decoration: none;
+  font-size: 28px;
+}
+
+.search-comic-item .title-row a:hover {
+  color: #1b72e2;
+}
+
 .search-comic-item .title span {
   color: #999;
 }
 
-.search-comic-item .info-container {
+.search-comic-item .info-row {
   display: flex;
   flex-direction: row;
   gap: 10px;
   flex-wrap: wrap;
+
 }
 
-.info-container .info {
+.info-row .info {
   display: flex;
   color: white;
   gap: 5px;

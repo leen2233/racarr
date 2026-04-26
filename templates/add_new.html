@@ -18,7 +18,7 @@
 
   <div class="loading" id="loading" style="display: none"><div></div><div></div></div>
   <div class="error" id="error" style="display: none">
-    <p>Couldn't fetch discover data. </p><button onClick="fetchDiscoverData()">Retry</button>
+    <p>Couldn't fetch discover data. </p><button onClick="handleSearch()">Retry</button>
   </div>
 </div>
 
@@ -30,6 +30,8 @@
   async function handleSearch() {
     const query = document.getElementById("searchInput").value;
     document.getElementById("search-helper").style.display = "none";
+    document.getElementById("error").style.display = "none";
+    document.getElementById("search-comics-container").innerHTML="";
     document.getElementById("loading").style.display = "block";
 
     if (query == "") {
@@ -56,9 +58,12 @@
         container.innerHTML += `
           <div class="search-comic-item">
             <img src="${item.cover}" loading='lazy'>
-            <div>
-              <div class="title">${item.name} <span>(${item.year})</span></div>
-              <div class="info-container">
+            <div class="search-comic-data">
+              <div class="title-row">
+                <div class="title">${item.name} <span>(${item.year})</span></div>
+                <a href="${item.url}" target="_blank"><i class="fa fa-external-link"></i></a>
+              </div>
+              <div class="info-row">
                 <div class="info"><i class="fa fa-tags"></i>${formatGenres(item.genres)}</div>
                 <div class="info"><i class="fa fa-building"></i>${item.publisher}</div>
                 <div class="info"><i class="fa fa-files-o"></i>${item.total_issues} issues</div>
