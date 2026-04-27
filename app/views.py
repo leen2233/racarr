@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.core.cache import cache
-
+from django.conf import settings
+import os
 
 # Create your views here.
 def home(request):
@@ -8,10 +9,13 @@ def home(request):
 
 
 def add_new(request):
-    return render(request, "add_new.html")
+    context = {
+        "media_path": os.path.join(settings.BASE_DIR, settings.MEDIA_ROOT)
+    }
+    return render(request, "add_new.html", context=context)
 
 
-def settings(request):
+def settings_page(request):
     return render(request, "settings.html")
 
 

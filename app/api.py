@@ -10,7 +10,6 @@ from app.helpers.soup import parse_comics_from_response
 cs = cloudscraper.create_scraper(
     interpreter="js2py",  # Recommended for v3 challenges
     delay=5,  # Allow more time for complex challenges
-    debug=True,
 )
 
 READALLCOMICS_URL = "https://readallcomics.com"
