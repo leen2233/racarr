@@ -1,6 +1,7 @@
 HIGH:
  [x] discover page
  [x] search page
+ [x] add new popup
  [ ] comic detail page
  [ ] issue detail page
  [ ] my comics page
@@ -9,7 +10,7 @@ HIGH:
 ---
 
 MEDIUM:
- [ ] make backends OPP
+ [x] make sources OPP
  [ ] make logging configurable
  [ ] settings page
  [ ] proxy usage

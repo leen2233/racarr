@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.core.cache import cache
 from django.conf import settings
 import os
+from app import sources # type: ignore
 
 # Create your views here.
 def home(request):
@@ -20,7 +21,9 @@ def settings_page(request):
 
 
 def discover(request):
+    source = sources.default
+
     # if discover data available at cache, directly pass to template
-    context = {"discover_data": cache.get("discover-data")}
+    context = {"discover_data": cache.get(f"discover-data-{source}")}
 
     return render(request, "discover.html", context=context)
