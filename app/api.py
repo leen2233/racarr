@@ -17,8 +17,8 @@ def get_discover_data(request):
 
     try:
         source_instance = getattr(sources, source)
-    except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception:
+        return Response({"error": "Unknown source"}, status=status.HTTP_400_BAD_REQUEST)
 
     result, error = source_instance.discover()
 

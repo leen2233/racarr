@@ -9,10 +9,29 @@ def home(request):
     return render(request, "home.html")
 
 
-def add_new(request):
+def add_new(request):    
+    default_source = request.GET.get("source", sources.default)
+    query = request.GET.get("query", "")
+
+    sources_obj = [
+        {
+            "name": getattr(sources, source).NAME, 
+            "id": source,
+            "selected": source == default_source,
+        }
+        for source in sources.__all__
+    ]
+
+    cache_key = f"search-data-{query.replace(' ', '-')}-{default_source}"
+
     context = {
-        "media_path": os.path.join(settings.BASE_DIR, settings.MEDIA_ROOT)
+        "media_path": os.path.join(settings.BASE_DIR, settings.MEDIA_ROOT),
+        "search_results": cache.get(cache_key),
+        "sources": sources_obj,
+        "default_source": default_source,
+        "query": query
     }
+    print("query: " ,query)
     return render(request, "add_new.html", context=context)
 
 
@@ -21,9 +40,22 @@ def settings_page(request):
 
 
 def discover(request):
-    source = sources.default
+    default_source = request.GET.get("source", sources.default)
+
+    sources_obj = [
+        {
+            "name": getattr(sources, source).NAME, 
+            "id": source,
+            "selected": source == default_source, # make default source or selected source at query selected by default
+        }
+        for source in sources.__all__
+    ]
 
     # if discover data available at cache, directly pass to template
-    context = {"discover_data": cache.get(f"discover-data-{source}")}
+    context = {
+        "discover_data": cache.get(f"discover-data-{default_source}"),
+        "sources": sources_obj,
+        "default_source": default_source
+    }
 
     return render(request, "discover.html", context=context)

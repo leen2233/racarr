@@ -4,11 +4,20 @@
 {%block home_group%}active{%endblock%}
 
 {% block content %}
+<div id="toolbar">
+  <p>Source:</p>
+  <select id="source">
+    {% for source in sources %}
+    <option value="{{source.id}}" {%if source.selected %} selected {%endif%}>{{source.name}}</option>
+    {% endfor %}
+  </select>
+  <button class="active" onClick="changeSource()">Search</button>
+</div>
+<div class="loading" id="loading" style="display: none"><div></div><div></div></div>
+<div class="error" id="error" style="display: none">
+  <p>Couldn't fetch discover data. <span id="error-message"></span><br /></p><button onClick="changeSource()">Retry</button>
+</div>
 <div id="discover-container">
-  <div class="loading" id="loading" style="display: none"><div></div><div></div></div>
-  <div class="error" id="error" style="display: none">
-    <p>Couldn't fetch discover data. </p><button onClick="fetchDiscoverData()">Retry</button>
-  </div>
   {% if discover_data %}
     {% for item in discover_data %}
       <div class="discover-item">
@@ -27,30 +36,37 @@
   {% else %}
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        fetchDiscoverData();
+        const params = new URLSearchParams(window.location.search);
+        var source = params.get("source");
+        if (!source){
+          source = "{{default_source}}"
+        }
+
+        fetchDiscoverData(source);
       })
     </script>
   {% endif %}
 </div>
 
 <script>
-  async function fetchDiscoverData() {
+  async function fetchDiscoverData(source) {
     document.getElementById("loading").style.display = "block";
     document.getElementById("error").style.display = "none";
+    const container = document.getElementById("discover-container");
+    container.innerHTML = "";
 
-    const url = "/api/discover";
+    const url = "/api/discover?source=" + source;
     try {
       const response = await fetch(url);
       document.getElementById("loading").style.display = "none";
       
+      const result = await response.json();
+
       if (!response.ok) {
         document.getElementById("error").style.display = "block";
-        throw new Error(response.error);
+        throw new Error(result.error);
       }
 
-      const result = await response.json();
-      const container = document.getElementById("discover-container");
-      container.innerHTML = "";
 
       result.forEach((item) => {
         container.innerHTML += `
@@ -69,6 +85,7 @@
         `;
       })
     } catch (error) {
+      document.getElementById("error-message").innerHTML = error;
       console.error(error);
     }
   }
@@ -79,6 +96,16 @@
       text += `, ${value[i]}`;
     }
     return text;
+  }
+
+  function changeSource() {
+    const source = document.getElementById("source").value
+    const url = new URL(window.location);
+
+    url.searchParams.set("source", source);
+    window.history.pushState({}, "", url);
+
+    fetchDiscoverData(source);
   }
 </script>
 

@@ -230,6 +230,29 @@ button.active:hover {
   border-radius: 2px;
 }
 
+#toolbar {
+  width: 100%;
+  height: 60px;
+  background-color: #262626;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  font-size: 16px;
+  padding: 0px 20px;
+}
+
+#toolbar select {
+  height: 35px;
+  border: 1px solid white;
+  border-radius: 4px;
+  background-color: transparent;
+  color: white;
+  padding: 0 10px;
+}
+
 /* End Discover styles */
 
 /* Search Page styles */
@@ -290,6 +313,28 @@ button.active:hover {
   border-color: #66afe9;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
 }
+
+.search-container .search-bar select {
+  border: 1px solid #dde6e9;
+  height: 100%;
+  padding-left: 10px;
+  font-size: 16px;
+  background-color: #333;
+  color: white;
+  margin: 0 10px;
+  border-radius: 4px;
+}
+
+.search-container .search-bar select:focus {
+  border-color: #66afe9;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+}
+
+.search-container .search-bar button.active {
+  height: 100%;
+  font-size: 16px;
+}
+
 
 #search-helper {
   font-size: 24px;
@@ -462,6 +507,10 @@ button.active:hover {
   display: inline;
 }
 
+.error p span {
+  font-weight: bold;
+}
+
 .error button {
   display: inline-block;
   background-color: transparent;
@@ -470,8 +519,14 @@ button.active:hover {
   color: white;
   font-size: 15px;
   cursor: pointer;
+  padding: 0;
 }
 
+#content .error {
+  width: 90%;
+  margin: auto;
+  margin-top: 30px;
+}
 
 #button-spinner {
   width: 5px;
@@ -590,6 +645,7 @@ button.active:hover {
   border-radius: 4px;
   background-color: transparent;
   color: white;
+  padding-left: 10px;
 }
 
 #popup-container .popup .popup-content .form .form-item .checkbox {
