@@ -3,6 +3,7 @@ from django.core.cache import cache
 from django.conf import settings
 import os
 from app import sources # type: ignore
+from app.models import Comic
 
 # Create your views here.
 def home(request):
@@ -59,3 +60,14 @@ def discover(request):
     }
 
     return render(request, "discover.html", context=context)
+
+
+def view_comic_page(request, id):
+    comic = Comic.objects.get(id=id)
+
+    context = {
+            "comic": comic,
+            }
+
+    return render(request, "view_comic.html", context=context)
+

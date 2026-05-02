@@ -26,17 +26,24 @@ class SearchItem:
 
 @dataclass
 class Issue:
-    volume = int
-    issue = int
-    name = Optional[str]
-    file = Optional[str]
-    id = str  # 'id' means unique identificator, can be url for comic, pk in database etc.
+    volume: int
+    issue: Optional[float]
+    original_text: Optional[str]
+    year: Optional[int]
+    is_annual: bool
+    id: str  # 'id' means unique identificator, can be url for comic, pk in database etc.
+    name: Optional[str] = ""
+    file: Optional[str] = ""
+    priority: int = 0
 
     def serialize(self):
         return {
             "name": self.name,
+            "original_text": self.original_text,
             "volume": self.volume,
             "issue": self.issue,
+            "year": self.year,
+            "is_annual": self.is_annual,
             "id": self.id,
         }
 

@@ -1,14 +1,17 @@
 import re
-from app.types import SearchItem
+from app.types import SearchItem, Issue, Comic
 from typing import Tuple, Optional
 from bs4 import BeautifulSoup as BS
+from bs4.element import Tag, NavigableString
 
 from .base import Source
 
 
 YEAR_REGEX = r"\d{4}"
 TOTAL_ISSUES_REGEX = r"\d+"
-
+VOLUME_REGEX = r'\b(?:v|vol)\.?\s*(\d+)'
+YEAR_REGEX = r'\(?([1-9]\d{3})\)?'
+ANNUAL_REGEX = r'\b(annual|special)\b'
 
 class ReadAllComics(Source):
     NAME = "ReadAllComics"
@@ -31,6 +34,18 @@ class ReadAllComics(Source):
             return None, str(e)
 
         result = self.parse_comics_from_response(res.content)
+        return result
+
+    def get(self, id):
+        """
+        id: url for comic
+        """
+        try:
+            res = self._make_request(id)
+        except Exception as e:
+            return None, str(e)
+
+        result = self.parse_comic_from_response(res.content, id)
         return result
 
     def parse_comics_from_response(self, html) -> Tuple[Optional[list[SearchItem]], str]:
@@ -109,4 +124,134 @@ class ReadAllComics(Source):
         return result, ""
      
 
+    def parse_comic_from_response(self, html, id):
+        if not html:
+            return None, "No html is given"
+
+        try:
+            soup = BS(html, "html.parser")
+        except Exception as e:
+            print("[ HTML PARSE ERROR ]", html)
+            return None, f"Error parsing response html: {e}"
+
+        div = soup.find("div", {"class": "description-archive"})
+        if not div:
+            return None, "Comic details not found"
+
+        cover = div.find("img")
+
+        if cover:
+            cover = str(cover["src"]) # type: ignore
+        else:
+            cover = None
+
+        name = div.find("h1")
+        if name:
+            name = name.text.strip() # type: ignore
+        else:
+            name = None
+
+        genres = []
+        publisher = None
+        p = div.find("div", {"class": "b"}).find("p") # type: ignore
+        if p:
+            for text in p.text.strip().split("\n"): # type: ignore
+                text = text.strip()
+                if text.startswith("Genres:"):
+                    genres = text.replace("Genres:", "").strip().split(", ")
+                elif text.startswith("Publisher:"):
+                    publisher = text.replace("Publisher:", "").strip()
+
+        div = div.find("div", {"class": "b"}) # type: ignore
+        
+        description = ""
+        for item in div.children: # type: ignore
+            if isinstance(item, Tag):
+                if item.name == "span":
+                    description += f"<span>{item.text}</span>\n"
+            elif isinstance(item, NavigableString):
+                text = item.text.strip()
+                if text:
+                    description += f"<strong>{item.text}</strong>\n"
+
+        issues_div = soup.find("ul", {"class": "list-story"})
+        issues = []
+        if issues_div:
+            # to calculate priority
+            issue_count = len(issues_div.find_all("li"))
+            counter = 0
+            for item in issues_div.find_all("li"):
+                link = item.find("a")
+                if not link:
+                    continue
+
+                print(link)
+                url = str(link["href"])
+                text = link.text.strip()
+
+                volume_number = self.get_volume_number(text)
+                issue_number = self.get_issue_number(text)
+                year = self.get_year(text)
+                is_annual = self.get_is_annual(text)
+
+                issue = Issue(volume=volume_number,
+                              issue=issue_number,
+                              original_text=text,
+                              year=year,
+                              is_annual=is_annual,
+                              id=url,
+                              name="",
+                              priority=issue_count - counter)
+                issues.append(issue)
+                counter += 1
+
+        comic = Comic(name=name,
+                      id=id,
+                      description=description,
+                      cover=cover,
+                      publisher=publisher,
+                      genres=genres,
+                      year=0,
+                      total_issues=len(issues),
+                      issues=issues)
+
+        return comic, None
+                
+
+    def get_volume_number(self, text: str) -> int:
+        match = re.search(VOLUME_REGEX, text, re.IGNORECASE)
+        if match:
+            return int(match.group(1))
+        return 1
+
+    def get_issue_number(self, text: str) -> Optional[float]:
+        # remove year in parentheses to avoid matching it
+        text = re.sub(r'\s*[\(\[].*?[\)\]]\s*$', '', text)
+
+        # remove volume part completely (v, vol, part, etc.)
+        text = re.sub(r'\b(?:v|vol|part)\.?\s*\d+', '', text, flags=re.IGNORECASE)
+
+        # match issue:
+        # prefer #number first, otherwise last standalone number (with optional .1)
+        match = re.search(r'#\s*(\d+(?:\.\d+)?)', text)
+        if match:
+            num = match.group(1)
+            return float(num) if '.' in num else float(num)
+
+        # get last number in string (avoids picking years or earlier numbers like 94)
+        matches = re.findall(r'\b\d+(?:\.\d+)?', text)
+        if matches:
+            num = matches[-1]
+            return float(num) if '.' in num else float(num)
+
+        return None
+
+    def get_year(self, text: str) -> Optional[int]:
+        match = re.search(YEAR_REGEX, text)
+        if match:
+            return int(match.group(1))
+        return None
+
+    def get_is_annual(self, text: str) -> bool:
+        return bool(re.search(ANNUAL_REGEX, text, re.IGNORECASE))
 
