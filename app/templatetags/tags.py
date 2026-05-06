@@ -11,3 +11,7 @@ def format_genres(value):
 def stringify(value):
     return json.dumps(value)
 
+@register.filter
+def get_downloaded_width(value):
+    return 100 / value.total_count * value.downloaded_count
+

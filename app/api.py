@@ -81,7 +81,7 @@ def add_comic(request):
 
     if Comic.objects.filter(remote_id=id, source=source).exists():
         comic_obj = Comic.objects.get(remote_id=id, source=source)
-        view_comic_url = reverse("view-comic", args=[comic_obj.id])
+        view_comic_url = reverse("comic-detail", args=[comic_obj.id])
         return Response({"status": "already exists", "url": view_comic_url})
 
     try:
@@ -143,6 +143,6 @@ def add_comic(request):
     
     Issue.objects.bulk_create(issues_to_save)
 
-    view_comic_url = reverse("view-comic", args=[comic_obj.id])
+    view_comic_url = reverse("comic-detail", args=[comic_obj.id])
     return Response({"status": "success", "url": view_comic_url})
 

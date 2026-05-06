@@ -13,12 +13,12 @@ class Genre(models.Model):
 
 def cover_path(instance, filename):
     ext = os.path.splitext(filename)[1]
-    return f"{instance.name} ({instance.year})/cover.{ext}"
+    return f"{instance.name}/cover.{ext}"
 
 
 def issue_file_path(instance: "Issue", filename: str) -> str:
     ext = os.path.splitext(filename)[1]
-    return f"{instance.comic.name} ({instance.comic.year})/Vol {instance.volume}/{instance.comic.name} Vol.{instance.volume} #{instance.issue}.{ext}"  # type: ignore
+    return f"{instance.comic.name}/Vol {instance.volume}/{instance.comic.name} Vol.{instance.volume} #{instance.issue}.{ext}"  # type: ignore
 
 
 class MonitorType(models.TextChoices):

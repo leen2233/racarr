@@ -1,8 +1,19 @@
 {% extends 'base.html' %}
+{% load tags %}
 {%block home_active%}active{%endblock%}
 {%block home_group%}active{%endblock%}
 
 {% block content %}
- <p>hello</p>
+<div class="home-comics-container">
+  {% for comic in comics %}
+    <a class="comic-item" href="{% url 'comic-detail' comic.id %}">
+      <img src={{comic.cover.url}} />
+      <div class="progress">
+        <div class="downloaded" style="width: {{comic | get_downloaded_width}}%"></div>
+      </div>
+      <p>{{comic.name}}</p>{{comic.test}}
+    </a>
+  {% endfor %}
+</div>
 {% endblock content %}
 

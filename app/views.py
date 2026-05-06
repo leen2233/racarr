@@ -7,7 +7,14 @@ from app.models import Comic
 
 # Create your views here.
 def home(request):
-    return render(request, "home.html")
+    comics = Comic.objects.all()
+    for comic in comics:
+        comic.total_count = comic.issues.count()
+        comic.downloaded_count = comic.issues.exclude(file="").exclude(file=None).count()
+
+    context = {"comics": comics}
+
+    return render(request, "home.html", context=context)
 
 
 def add_new(request):    
@@ -62,12 +69,13 @@ def discover(request):
     return render(request, "discover.html", context=context)
 
 
-def view_comic_page(request, id):
+def comic_detail_page(request, id):
     comic = Comic.objects.get(id=id)
+    comic.folder = os.path.join(settings.BASE_DIR, settings.MEDIA_ROOT, comic.name)
 
     context = {
-            "comic": comic,
-            }
+        "comic": comic,
+    }
 
-    return render(request, "view_comic.html", context=context)
+    return render(request, "comic_detail.html", context=context)
 
