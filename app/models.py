@@ -13,12 +13,12 @@ class Genre(models.Model):
 
 def cover_path(instance, filename):
     ext = os.path.splitext(filename)[1]
-    return f"{instance.name}/cover.{ext}"
+    return f"{instance.name}/cover{ext}"
 
 
 def issue_file_path(instance: "Issue", filename: str) -> str:
     ext = os.path.splitext(filename)[1]
-    return f"{instance.comic.name}/Vol {instance.volume}/{instance.comic.name} Vol.{instance.volume} #{instance.issue}.{ext}"  # type: ignore
+    return f"{instance.comic.name}/Vol {instance.volume}/{instance.comic.name} Vol.{instance.volume} #{instance.issue}{ext}"  # type: ignore
 
 
 class MonitorType(models.TextChoices):
@@ -81,3 +81,30 @@ class Issue(models.Model):
 
     class Meta:
         unique_together = ("comic", "original_text")
+
+
+class Queue(models.Model):
+    class Statuses(models.TextChoices):
+        PENDING = "pending", "Pending"
+        DOWNLOADING = "downloading", "Downloading"
+        ERROR = "error", "Error"
+
+    issue = models.OneToOneField(Issue, on_delete=models.CASCADE, related_name="queue")
+    status = models.CharField(max_length=20, choices=Statuses.choices, default="pending")
+    priority = models.IntegerField(default=0)
+
+    error_message = models.TextField(null=True, blank=True)
+    next_try = models.DateTimeField(null=True, blank=True) # if error, for timeout
+    
+    objects = models.Manager()
+
+    def set_status_error(self, error: str):
+        self.error_message = error
+        self.status = Queue.Statuses.ERROR
+        self.save()
+
+    def set_status_downloading(self):
+        self.status = Queue.Statuses.DOWNLOADING
+        self.save()
+
+

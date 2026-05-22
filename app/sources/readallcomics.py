@@ -48,6 +48,9 @@ class ReadAllComics(Source):
         result = self.parse_comic_from_response(res.content, id)
         return result
 
+    def download(self, id):
+        return "/home/leen/Documents/Comics/Superior Spider-Man/Superior Spider-Man v01 - My Own Worst Enemy (2013) (Digital) (Zone-Empire).cbr", None
+
     def parse_comics_from_response(self, html) -> Tuple[Optional[list[SearchItem]], str]:
         if not html:
             return None, "No html is given"

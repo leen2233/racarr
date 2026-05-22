@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from django.shortcuts import reverse
+from django.shortcuts import reverse, get_object_or_404
 from rest_framework import status
 from django.core.cache import cache
 from django.core.files import File
@@ -8,7 +8,8 @@ from django.core.files.temp import NamedTemporaryFile
 import requests
 
 from app import sources # type: ignore
-from app.models import Comic, Issue, Genre
+from app.models import Comic, Issue, Genre, Queue
+from app.tasks import downloader
 
 
 @api_view(["GET"])
@@ -108,7 +109,7 @@ def add_comic(request):
 
     # save genres
     for item in comic.genres:
-        genre, created = Genre.objects.get_or_create(name=item)
+        genre, _ = Genre.objects.get_or_create(name=item)
         comic_obj.genres.add(genre)
 
     # save cover
@@ -121,6 +122,7 @@ def add_comic(request):
             comic_obj.cover.save("cover.jpg", File(img_temp), save=True)
         else:
             print(f"Couldn't download cover, response status code: {response.status_code}")
+         
     except Exception as e:
         print(f"Couldn't download cover for comic, error: {e}")
 
@@ -145,4 +147,17 @@ def add_comic(request):
 
     view_comic_url = reverse("comic-detail", args=[comic_obj.id])
     return Response({"status": "success", "url": view_comic_url})
+
+
+@api_view(["POST"])
+def download_issue(request):
+    id = request.data.get("id")
+    print(id)
+    issue = get_object_or_404(Issue, id=id)
+
+    queue, _ = Queue.objects.get_or_create(issue=issue)
+
+    downloader.delay_on_commit(queue.id)    
+
+    return Response({"status": "success"})
 

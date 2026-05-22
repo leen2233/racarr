@@ -43,7 +43,13 @@
         <td class="status">{% if not issue.file %}<i title="Issue missing from disk" class="fa fa-exclamation-triangle"></i>{% else %}<i class="fa fa-check-circle success"></i>{% endif %}</td>
         <td class="actions">
           <div class="actions-container">
-            {% if not issue.file %}<i title="Download issue" class="fa fa-download download"></i>{% endif %}
+            {% if not issue.file %}
+              {% if issue.queue %}
+                <i title="Status: {{issue.queue.status}}&#013;Priority: {{issue.queue.priority}}" id="{{issue.id}}" class="fa fa-cloud-download download"></i>
+              {% else %}
+                <i title="Download issue" id="{{issue.id}}" class="fa fa-download download" onClick="downloadIssue({{issue.id}})"></i>
+              {% endif %}
+            {% endif %}
             {% if issue.source == "readallcomics" %}<a href="{{issue.remote_id}}"><i title="Open remote link" class="fa fa-external-link"></i>{% endif %}</a>
           </div>
         </td>
@@ -52,5 +58,40 @@
     </table>
   </div>
 </div>
+
+<script>
+  async function downloadIssue(id) {
+    var icon = document.getElementById(id);
+    icon.classList.remove("fa-download");
+    icon.classList.add("fa-spinner");
+
+    const csrfToken = getCookie("csrftoken")
+    const url = "/api/download-issue?id=" + id;
+    try {
+      const response = await fetch(url, {
+        method: "POST", 
+        body: JSON.stringify({id: id}),
+        headers:{
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken,
+        }
+      });
+      
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error);
+      }
+
+      icon.classList.remove("fa-spinner");
+      icon.classList.add("fa-cloud-download");
+    } catch (error){
+      icon.classList.remove("fa-spinner");
+      icon.classList.add("fa-download");
+      console.error(error);
+    }
+  }
+
+</script>
 {% endblock %}
 

@@ -2,7 +2,7 @@ HIGH:
  [x] discover page
  [x] search page
  [x] add new popup
- [ ] comic detail page
+ [x] comic detail page
  [ ] issue detail page
  [ ] my comics page
  [ ] comic downloading

@@ -105,18 +105,4 @@ function hidePopup() {
   popup.parentNode.removeChild(popup);
 }
 
-function getCookie(name) {
-  if (!document.cookie) {
-    return null;
-  }
-
-  const csrfCookies = document.cookie.split(';')
-    .map(c => c.trim())
-    .filter(c => c.startsWith(name + '='));
-
-  if (csrfCookies.length === 0) {
-    return null;
-  }
-  return decodeURIComponent(csrfCookies[0].split('=')[1]);
-}
 

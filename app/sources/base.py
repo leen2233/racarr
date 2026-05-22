@@ -35,6 +35,14 @@ class Source:
         """
         return None, "This function is not implemented in this source"
 
+    def download(self, id: str) -> Tuple[Optional[str], Optional[str]]:
+        """
+        Downloads given issue from source
+
+        Returns path to downloaded file, or error message
+        """
+        return None, "This function is not implemented in this source"
+
     def _make_request(self, 
                       path: str, 
                       method: str="GET", 
