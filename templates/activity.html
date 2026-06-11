@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load tags %}
+{%block activity_active%}active{%endblock%}
+{%block activity_group%}active{%endblock%}
+
+{% block content %}
+<div class="activity-list">
+  <table>
+    <tr>
+      <th>Priority</th>
+      <th>Title</th>
+      <th>Volume</th>
+      <th>Issue</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  {% for item in queue %}
+    <tr>
+      <td class="id">{{item.priority}}</td>
+      <td class="name">{{item.issue.original_text}}</td>
+      <td class="volume">{{item.issue.volume}}</td>
+      <td class="issue">{{item.issue.issue|floatformat}}</td>
+      <td class="status">{{item.status}}</td>
+      <td class="actions">
+        <div class="actions-container">
+        </div>
+      </td>
+    </tr>
+  {% endfor %}
+  </table>
+</div>
+
+{% endblock content %}

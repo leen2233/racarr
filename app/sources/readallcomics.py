@@ -1,8 +1,13 @@
 import re
+import zipfile
+import random
+import string
+import os
 from app.types import SearchItem, Issue, Comic
 from typing import Tuple, Optional
 from bs4 import BeautifulSoup as BS
 from bs4.element import Tag, NavigableString
+from django.conf import settings
 
 from .base import Source
 
@@ -24,7 +29,7 @@ class ReadAllComics(Source):
         except Exception as e:
             return None, str(e)
 
-        result = self.parse_comics_from_response(str(res.content))
+        result = self._parse_comics_from_response(str(res.content))
         return result
 
     def discover(self):
@@ -33,7 +38,7 @@ class ReadAllComics(Source):
         except Exception as e:
             return None, str(e)
 
-        result = self.parse_comics_from_response(res.content)
+        result = self._parse_comics_from_response(res.content)
         return result
 
     def get(self, id):
@@ -45,13 +50,45 @@ class ReadAllComics(Source):
         except Exception as e:
             return None, str(e)
 
-        result = self.parse_comic_from_response(res.content, id)
+        result = self._parse_comic_from_response(res.content, id)
         return result
 
     def download(self, id):
-        return "/home/leen/Documents/Comics/Superior Spider-Man/Superior Spider-Man v01 - My Own Worst Enemy (2013) (Digital) (Zone-Empire).cbr", None
+        try:
+            res = self._make_request(id)
+        except Exception as e:
+            return None, str(e)
 
-    def parse_comics_from_response(self, html) -> Tuple[Optional[list[SearchItem]], str]:
+        image_urls, error = self._parse_images_from_response(res.content)
+        if error:
+            return None, error
+
+        if not image_urls:
+            return None, "Couldn't find images from this url"
+
+        # random filename
+        output_filename = ''.join(random.choice(string.ascii_lowercase) for i in range(20)) + ".cbz"
+        output_path = os.path.join(settings.TEMP_DIR, output_filename)
+
+        with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as archieve:
+            for i, url in enumerate(image_urls, 1):
+                try:
+                    response = self._make_request(url)
+                    response.raise_for_status()
+                    img_filename = f"{i:03d}.jpg"
+                    archieve.writestr(img_filename, response.content)
+
+                except Exception as e:
+                    return None, "Couldn't download image from url: " + url + ".\n Error:" + str(e)
+
+        # verify cbz file
+        with zipfile.ZipFile(output_path, "r") as archieve:
+            if len(archieve.namelist()) == 0:
+                return None, "No images were successfully downloaded"
+
+        return output_path, None
+
+    def _parse_comics_from_response(self, html) -> Tuple[Optional[list[SearchItem]], str]:
         if not html:
             return None, "No html is given"
 
@@ -127,7 +164,7 @@ class ReadAllComics(Source):
         return result, ""
      
 
-    def parse_comic_from_response(self, html, id):
+    def _parse_comic_from_response(self, html, id):
         if not html:
             return None, "No html is given"
 
@@ -192,10 +229,10 @@ class ReadAllComics(Source):
                 url = str(link["href"])
                 text = link.text.strip()
 
-                volume_number = self.get_volume_number(text)
-                issue_number = self.get_issue_number(text)
-                year = self.get_year(text)
-                is_annual = self.get_is_annual(text)
+                volume_number = self._get_volume_number(text)
+                issue_number = self._get_issue_number(text)
+                year = self._get_year(text)
+                is_annual = self._get_is_annual(text)
 
                 issue = Issue(volume=volume_number,
                               issue=issue_number,
@@ -219,15 +256,34 @@ class ReadAllComics(Source):
                       issues=issues)
 
         return comic, None
-                
 
-    def get_volume_number(self, text: str) -> int:
+    def _parse_images_from_response(self, html):
+        if not html:
+            return None, "No html is given"
+
+        try:
+            soup = BS(html, "html.parser")
+        except Exception as e:
+            print("[ HTML PARSE ERROR ]", html)
+            return None, f"Error parsing response html: {e}"
+
+        pages = soup.select("center p img")
+        urls = []
+        for page in pages:
+            source = page.get("src")
+            if source:
+                urls.append(source)
+
+        return urls, None
+       
+
+    def _get_volume_number(self, text: str) -> int:
         match = re.search(VOLUME_REGEX, text, re.IGNORECASE)
         if match:
             return int(match.group(1))
         return 1
 
-    def get_issue_number(self, text: str) -> Optional[float]:
+    def _get_issue_number(self, text: str) -> Optional[float]:
         # remove year in parentheses to avoid matching it
         text = re.sub(r'\s*[\(\[].*?[\)\]]\s*$', '', text)
 
@@ -249,12 +305,12 @@ class ReadAllComics(Source):
 
         return None
 
-    def get_year(self, text: str) -> Optional[int]:
+    def _get_year(self, text: str) -> Optional[int]:
         match = re.search(YEAR_REGEX, text)
         if match:
             return int(match.group(1))
         return None
 
-    def get_is_annual(self, text: str) -> bool:
+    def _get_is_annual(self, text: str) -> bool:
         return bool(re.search(ANNUAL_REGEX, text, re.IGNORECASE))
 

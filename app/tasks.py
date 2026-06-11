@@ -30,7 +30,9 @@ def downloader(queue_id):
         file_name = os.path.basename(path)
         queue.issue.file.save(file_name, File(f))
 
-    queue.delete()
+    os.remove(path)
 
+    print("Successfully downloaded comic: ", queue_id)
+    queue.delete()
     return
 

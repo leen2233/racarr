@@ -24,8 +24,8 @@
           <a href="{% url 'add_new' %}" class="navbar-item navbar-child {%block add_new_active%}{%endblock%}">Add New</a>
           <a href="{% url 'discover' %}" class="navbar-item navbar-child {%block discover_active%}{%endblock%}">Discover</a>
         </div>
-        <div class="navbar-group">
-          <div class="navbar-item {%block activity_active%}{%endblock%}"><i class="fa fa-clock-o" aria-hidden="true"></i><p>Activity</p></div>
+        <div class="navbar-group {%block activity_group%}{%endblock%}">
+          <a href="{% url 'activity' %}" class="navbar-item {%block activity_active%}{%endblock%}"><i class="fa fa-clock-o" aria-hidden="true"></i><p>Activity</p></a>
         </div>
         <div class="navbar-group {%block settings_group%}{%endblock%}">
           <a href="{% url 'settings' %}" class="navbar-item {%block settings_active%}{%endblock%}"><i class="fa fa-cogs"></i><p>Settings</p></a>

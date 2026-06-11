@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import home, add_new, settings_page, discover, comic_detail_page
+from .views import home, add_new, settings_page, discover, comic_detail_page, activity
 from .api import get_discover_data, search_remote, add_comic, download_issue
 
 urlpatterns = [
@@ -7,6 +7,7 @@ urlpatterns = [
     path('add', add_new, name="add_new"),
     path('settings', settings_page, name="settings"),
     path('discover', discover, name="discover"),
+    path('activity', activity, name="activity"),
     path('comic/<str:id>', comic_detail_page, name="comic-detail"),
 
 

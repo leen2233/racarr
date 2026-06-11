@@ -771,6 +771,11 @@ button.active:hover {
   background-color: #333333;
   border: 1px solid #858585;
   border-radius: 4px;
+  border-spacing: 0;
+}
+
+.issues-list table tr:hover {
+  background-color: #444444;
 }
 
 .issues-list table th,
@@ -812,6 +817,62 @@ button.active:hover {
 }
 
 .issues-list table td.actions a {
+  color: white;
+  text-decoration: none;
+}
+
+
+.activity-list {
+  margin: 30px;
+}
+
+.activity-list table {
+  color: white;
+  width: 100%;
+  padding: 0 10px;
+  border-radius: 4px;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.activity-list table th,
+.activity-list table td{
+  border-top: 1px solid #858585;
+  padding: 10px;
+  text-align: left;
+}
+
+.activity-list table th {
+  border: none;
+}
+
+.activity-list table td.volume,
+.activity-list table td.issue,
+.activity-list table td.actions,
+.activity-list table td.status{
+  width: 100px;
+}
+
+.activity-list table td.status {
+  text-align: center;
+}
+
+.activity-list table td.actions .actions-container {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.activity-list table td.actions i {
+  cursor: pointer;
+}
+
+.activity-list table td.actions i:hover {
+  color: grey;
+}
+
+.activity-list table td.actions a {
   color: white;
   text-decoration: none;
 }

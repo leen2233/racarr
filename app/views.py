@@ -3,7 +3,7 @@ from django.core.cache import cache
 from django.conf import settings
 import os
 from app import sources # type: ignore
-from app.models import Comic
+from app.models import Comic, Queue
 
 # Create your views here.
 def home(request):
@@ -78,4 +78,12 @@ def comic_detail_page(request, id):
     }
 
     return render(request, "comic_detail.html", context=context)
+
+
+def activity(request):
+    queue = Queue.objects.all()
+    context = {
+            "queue": queue
+    }
+    return render(request, "activity.html", context=context)
 
