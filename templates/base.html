@@ -5,6 +5,7 @@
     <title>Racarr</title>
     <link rel="stylesheet" href="{% static 'style.css' %}" />
     <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+    <script src="{% static 'notifications.js' %}"></script>
   </head>
   <body>
     <div class="header">
@@ -34,6 +35,7 @@
         <div class="navbar-group">
           <div class="navbar-item {%block system_active%}{%endblock%}"><i class="fa fa-laptop"></i><p>System</p></div>
         </div>
+        <div class="notifications" id="notifications"></div>
       </div>
       <div class="content" id="content">
         {% block content %}
@@ -55,6 +57,10 @@
         }
         return decodeURIComponent(csrfCookies[0].split('=')[1]);
       }
+
+      document.addEventListener("DOMContentLoaded", function () {
+          streamNotifications();
+      })
     </script>
   </body>
 </html>

@@ -30,11 +30,19 @@ SECRET_KEY = 'django-insecure-kxxd2n^um=+&rvts2qiuj@+t^=784zg444o$7*4rg&%25vomb0
 DEBUG = os.getenv("DEBUG", "false").lower() == "true"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
+REDIS_HOST = os.getenv("REDIS_HOST")
+REDIS_PORT = os.getenv("REDIS_PORT")
+
+if not REDIS_HOST or not REDIS_PORT:
+    print("REDIS_HOST or REDIS_PORT env is not valid. Some functinos won't work")
+
 
 # Application definition
 
 INSTALLED_APPS = [
     'jazzmin',
+    'daphne',
+    'django_eventstream',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,7 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app.apps.AppConfig',
     'corsheaders',
-    'rest_framework'
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -74,7 +82,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'racarr.wsgi.application'
+ASGI_APPLICATION = 'racarr.asgi.application'
 
 
 # Database
@@ -87,15 +95,16 @@ DATABASES = {
     }
 }
 
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379",
+if REDIS_HOST and REDIS_PORT:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": f"redis://{REDIS_HOST}:{REDIS_PORT}",
+        }
     }
-}
 
-CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
-CELERY_WORKER_CONCURRENCY = 1
+    CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
+    CELERY_WORKER_CONCURRENCY = 1
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

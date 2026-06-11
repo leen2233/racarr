@@ -5,6 +5,7 @@ from rest_framework import status
 from django.core.cache import cache
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
+from django_eventstream import send_event
 import requests
 
 from app import sources # type: ignore
@@ -151,8 +152,10 @@ def add_comic(request):
 
 @api_view(["POST"])
 def download_issue(request):
+    send_event("messages", "message", {"text": "hello", "type": "info"})
+    send_event("messages", "message", {"text": "error", "type": "error"})
+    return Response({"status": "ok"})
     id = request.data.get("id")
-    print(id)
     issue = get_object_or_404(Issue, id=id)
 
     queue, _ = Queue.objects.get_or_create(issue=issue)

@@ -4,6 +4,10 @@
 {%block home_group%}active{%endblock%}
 
 {% block content %}
+<div id="toolbar">
+  <button onClick="searchAllMissing({{comic.id}})">Search missing</button>
+</div>
+
 <div class="comic-detail-container">
   <div class="cover-info">
     <div class="cover">
@@ -66,12 +70,12 @@
     icon.classList.add("fa-spinner");
 
     const csrfToken = getCookie("csrftoken")
-    const url = "/api/download-issue?id=" + id;
+    const url = "/api/download-issue";
     try {
       const response = await fetch(url, {
         method: "POST", 
         body: JSON.stringify({id: id}),
-        headers:{
+        headers: {
           "Content-Type": "application/json",
           "X-CSRFToken": csrfToken,
         }
@@ -89,6 +93,28 @@
       icon.classList.remove("fa-spinner");
       icon.classList.add("fa-download");
       console.error(error);
+    }
+  }
+
+  async function searchAllMissing(id) {
+    const csrfToken = getCookie("csrftoken")    
+    const url = "/api/search-all-missing"
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify({id: id}),
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken
+        }
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.error);
+      }
+    } catch (error) {
+      console.error(error)
     }
   }
 
