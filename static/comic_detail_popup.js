@@ -49,7 +49,7 @@ function formatPopup(data, media_path) {
     <div class="footer">
       <div class="input">
         Start search for missing issues
-        <input type="checkbox" />
+        <input type="checkbox" id="search_missing" />
       </div>
       <button class="active" onClick="addComic('${data.id}')">
         <span id="button-text">Add comic</span>
@@ -71,8 +71,9 @@ async function addComic(id){
   const format  = document.getElementById("format").value;
   const volume_folder = document.getElementById("volume_folder").checked;
   const tags = document.getElementById("tags").value;
+  const search_missing = document.getElementById("search_missing").checked;
 
-  const data = {monitor: monitor, format: format, volume_folder: volume_folder, tags: tags, id: id};
+  const data = {monitor: monitor, format: format, volume_folder: volume_folder, tags: tags, id: id, search_missing: search_missing};
   try {
     const response = await fetch("/api/add-comic", {
       method: "POST",

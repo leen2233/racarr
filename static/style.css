@@ -630,7 +630,7 @@ button.active:hover {
 }
 
 #popup-container .popup .popup-content .img {
-  flex: 0 20% 40%;
+  flex: 0 20 40%;
 }
 
 #popup-container .popup .popup-content .img img {
@@ -740,7 +740,7 @@ button.active:hover {
 }
 
 .comic-detail-container .cover-info .cover {
-  width: 40%;
+  width: 35%;
 }
 
 .comic-detail-container .cover-info img {
@@ -749,7 +749,7 @@ button.active:hover {
 
 .comic-detail-container .cover-info .info {
   color: white;
-  width: 60%;
+  width: 65%;
 }
 
 .comic-detail-container .cover-info .info .description span {

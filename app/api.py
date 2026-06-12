@@ -80,6 +80,7 @@ def add_comic(request):
     format = request.data.get("format", "cbz")
     volume_folder = request.data.get("volume_folder", True)
     tags = request.data.get("tags", "")
+    search_missing = request.data.get("search_missing", False)
 
     if Comic.objects.filter(remote_id=id, source=source).exists():
         comic_obj = Comic.objects.get(remote_id=id, source=source)
@@ -146,15 +147,19 @@ def add_comic(request):
     
     Issue.objects.bulk_create(issues_to_save)
 
+    if search_missing:
+        print("search_missing is true")
+        for issue in comic_obj.issues.all():
+            queue, created = Queue.objects.get_or_create(issue=issue)
+            if created:
+                downloader.delay_on_commit(queue.id)
+
     view_comic_url = reverse("comic-detail", args=[comic_obj.id])
     return Response({"status": "success", "url": view_comic_url})
 
 
 @api_view(["POST"])
 def download_issue(request):
-    send_event("messages", "message", {"text": "hello", "type": "info"})
-    send_event("messages", "message", {"text": "error", "type": "error"})
-    return Response({"status": "ok"})
     id = request.data.get("id")
     issue = get_object_or_404(Issue, id=id)
 
@@ -162,5 +167,40 @@ def download_issue(request):
 
     downloader.delay_on_commit(queue.id)    
 
+    send_event("messages", "message", {"text": f"{queue.issue} added to queue", "type": "info"})
+    return Response({"status": "success"})
+
+
+@api_view(["POST"])
+def search_all_missing(request):
+    id = request.data.get("id")
+    comic = get_object_or_404(Comic, id=id)
+
+    new_added_counter = 0
+    for issue in comic.issues.all():
+        queue, added = Queue.objects.get_or_create(issue=issue)
+        if added:
+            new_added_counter += 1
+            downloader.delay_on_commit(queue.id)
+
+    send_event("messages", "message", {"text": f"{new_added_counter} issues added to queue", "type": "info"})
+    return Response({"status": "success"})
+
+
+@api_view(["POST"])
+def retry_queue_item(request):
+    id = request.data.get("id")
+
+    queue = get_object_or_404(Queue, id=id)
+    downloader.delay(queue.id)
+    return Response({"status": "success"})
+
+
+@api_view(["POST"])
+def delete_queue_item(request):
+    id = request.data.get("id")
+
+    queue = get_object_or_404(Queue, id=id)
+    queue.delete()
     return Response({"status": "success"})
 

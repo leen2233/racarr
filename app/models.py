@@ -107,4 +107,6 @@ class Queue(models.Model):
         self.status = Queue.Statuses.DOWNLOADING
         self.save()
 
+    class Meta:
+        ordering = ["-id"]
 

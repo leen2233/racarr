@@ -1,13 +1,15 @@
 from celery import shared_task
 from django.core.files.base import File
+from django_eventstream import send_event
 import os 
 
 from .models import Queue
 from app import sources # type: ignore
 
-@shared_task
+@shared_task(acks_late=True)
 def downloader(queue_id):
     print("Processing queue: ", queue_id)
+    send_event("messages", "message", {"text": f"Processing queue: {queue_id}", "type": "info"})
 
     queue = Queue.objects.get(id=queue_id)
     queue.set_status_downloading()
@@ -23,6 +25,7 @@ def downloader(queue_id):
     if not path:
         queue.set_status_error(error)
         print("Error downloading: ", error)
+        send_event("messages", "message", {"text": f"Error downlaoding comic: {queue.issue}. See details at activity page", "type": "error"})
         return
     
     # save issue file to issue object
@@ -33,6 +36,7 @@ def downloader(queue_id):
     os.remove(path)
 
     print("Successfully downloaded comic: ", queue_id)
+    send_event("messages", "message", {"text": f"Successfully downloaded comic: {queue.issue}", "type": "info"})
     queue.delete()
     return
 

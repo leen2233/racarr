@@ -106,6 +106,12 @@ if REDIS_HOST and REDIS_PORT:
     CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
     CELERY_WORKER_CONCURRENCY = 1
 
+    EVENTSTREAM_REDIS = {
+        'host': REDIS_HOST,
+        'port': REDIS_PORT,
+        'db': 0,
+    }
+
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
