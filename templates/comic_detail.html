@@ -6,6 +6,7 @@
 {% block content %}
 <div id="toolbar">
   <button class="active" onClick="searchAllMissing({{comic.id}})">Search missing</button>
+  <button class="danger" onClick="deleteComic({{comic.id}})">Delete</button>
 </div>
 
 <div class="comic-detail-container">
@@ -115,6 +116,33 @@
       }
     } catch (error) {
       console.error(error)
+    }
+  }
+
+  async function deleteComic(id) {
+    let result = await confirm("Are you sure to delete this comic? All data will be deleted, but not files.")
+    if (result) {
+      const csrfToken = getCookie("csrftoken")    
+      const url = "/api/comic"
+      try {
+        const response = await fetch(url, {
+          method: "DELETE",
+          body: JSON.stringify({id: id}),
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken
+          }
+        });
+
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.error);
+        }    
+        document.location.href = "/";
+      } catch (error) {
+        console.error(error)
+      }
+   
     }
   }
 

@@ -72,90 +72,97 @@ def search_remote(request):
     return Response(result_json)
 
 
-@api_view(["POST"])
-def add_comic(request):
-    id = request.data.get("id")
-    source = request.data.get("source", sources.default)
-    monitor = request.data.get("monitor", "all")
-    format = request.data.get("format", "cbz")
-    volume_folder = request.data.get("volume_folder", True)
-    tags = request.data.get("tags", "")
-    search_missing = request.data.get("search_missing", False)
+@api_view(["POST", "DELETE"])
+def comic(request):
+    if request.method == "POST":
+        id = request.data.get("id")
+        source = request.data.get("source", sources.default)
+        monitor = request.data.get("monitor", "all")
+        format = request.data.get("format", "cbz")
+        volume_folder = request.data.get("volume_folder", True)
+        tags = request.data.get("tags", "")
+        search_missing = request.data.get("search_missing", False)
 
-    if Comic.objects.filter(remote_id=id, source=source).exists():
-        comic_obj = Comic.objects.get(remote_id=id, source=source)
+        if Comic.objects.filter(remote_id=id, source=source).exists():
+            comic_obj = Comic.objects.get(remote_id=id, source=source)
+            view_comic_url = reverse("comic-detail", args=[comic_obj.id])
+            return Response({"status": "already exists", "url": view_comic_url})
+
+        try:
+            source_instance = getattr(sources, source)
+        except Exception:
+            return Response({"error": "Source not found"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        comic, error = source_instance.get(id)
+        if error:
+            return Response({"error": error}, status=status.HTTP_400_BAD_REQUEST)
+
+        comic_obj = Comic.objects.create(
+                    name = comic.name,
+                    description = comic.description,
+                    year = comic.year,
+                    remote_id = comic.id,
+                    source = source,
+                    publisher = comic.publisher,
+                    monitor = monitor,
+                    format = format,
+                    volume_folder = volume_folder,
+                    tags = tags
+                )
+
+        # save genres
+        for item in comic.genres:
+            genre, _ = Genre.objects.get_or_create(name=item)
+            comic_obj.genres.add(genre)
+
+        # save cover
+        try:
+            response = requests.get(comic.cover)
+            if response.status_code == 200:
+                img_temp = NamedTemporaryFile(delete=True)
+                img_temp.write(response.content)
+                img_temp.flush()
+                comic_obj.cover.save("cover.jpg", File(img_temp), save=True)
+            else:
+                print(f"Couldn't download cover, response status code: {response.status_code}")
+             
+        except Exception as e:
+            print(f"Couldn't download cover for comic, error: {e}")
+
+        # save issues
+        issues_to_save = []
+        for item in comic.issues:
+            issue = Issue(
+                    comic = comic_obj,
+                    name = item.name,
+                    original_text = item.original_text,
+                    volume = item.volume,
+                    issue = item.issue,
+                    is_annual = item.is_annual,
+                    priority = item.priority,
+                    remote_id = item.id,
+                    source = source,
+                    year = item.year,
+                )
+            issues_to_save.append(issue)
+        
+        Issue.objects.bulk_create(issues_to_save)
+
+        if search_missing:
+            print("search_missing is true")
+            for issue in comic_obj.issues.all():
+                queue, created = Queue.objects.get_or_create(issue=issue)
+                if created:
+                    downloader.delay_on_commit(queue.id)
+
         view_comic_url = reverse("comic-detail", args=[comic_obj.id])
-        return Response({"status": "already exists", "url": view_comic_url})
+        return Response({"status": "success", "url": view_comic_url})
+    elif request.method == "DELETE":
+        id = request.data.get("id")
+        comic = get_object_or_404(Comic, id=id)
+        comic.delete()
+        return Response({"status": "success"})
 
-    try:
-        source_instance = getattr(sources, source)
-    except Exception:
-        return Response({"error": "Source not found"}, status=status.HTTP_400_BAD_REQUEST)
-    
-    comic, error = source_instance.get(id)
-    if error:
-        return Response({"error": error}, status=status.HTTP_400_BAD_REQUEST)
-
-    comic_obj = Comic.objects.create(
-                name = comic.name,
-                description = comic.description,
-                year = comic.year,
-                remote_id = comic.id,
-                source = source,
-                publisher = comic.publisher,
-                monitor = monitor,
-                format = format,
-                volume_folder = volume_folder,
-                tags = tags
-            )
-
-    # save genres
-    for item in comic.genres:
-        genre, _ = Genre.objects.get_or_create(name=item)
-        comic_obj.genres.add(genre)
-
-    # save cover
-    try:
-        response = requests.get(comic.cover)
-        if response.status_code == 200:
-            img_temp = NamedTemporaryFile(delete=True)
-            img_temp.write(response.content)
-            img_temp.flush()
-            comic_obj.cover.save("cover.jpg", File(img_temp), save=True)
-        else:
-            print(f"Couldn't download cover, response status code: {response.status_code}")
-         
-    except Exception as e:
-        print(f"Couldn't download cover for comic, error: {e}")
-
-    # save issues
-    issues_to_save = []
-    for item in comic.issues:
-        issue = Issue(
-                comic = comic_obj,
-                name = item.name,
-                original_text = item.original_text,
-                volume = item.volume,
-                issue = item.issue,
-                is_annual = item.is_annual,
-                priority = item.priority,
-                remote_id = item.id,
-                source = source,
-                year = item.year,
-            )
-        issues_to_save.append(issue)
-    
-    Issue.objects.bulk_create(issues_to_save)
-
-    if search_missing:
-        print("search_missing is true")
-        for issue in comic_obj.issues.all():
-            queue, created = Queue.objects.get_or_create(issue=issue)
-            if created:
-                downloader.delay_on_commit(queue.id)
-
-    view_comic_url = reverse("comic-detail", args=[comic_obj.id])
-    return Response({"status": "success", "url": view_comic_url})
 
 
 @api_view(["POST"])

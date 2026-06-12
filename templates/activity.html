@@ -30,6 +30,9 @@
     </tr>
   {% endfor %}
   </table>
+  {% if not queue %}
+    <h2 id="search-helper">Queue is empty. Download items to see here.</h2>
+  {% endif %}
 </div>
 
 <script>

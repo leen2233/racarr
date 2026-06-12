@@ -1,5 +1,6 @@
 from django.db import models
 import os
+from app.storage import PreserveSpacesStorage
 
 
 class Genre(models.Model):
@@ -72,7 +73,7 @@ class Issue(models.Model):
     remote_id = models.TextField()
     source = models.CharField(max_length=255)
 
-    file = models.FileField(upload_to=issue_file_path, blank=True, null=True)  # type: ignore
+    file = models.FileField(upload_to=issue_file_path, blank=True, null=True, storage=PreserveSpacesStorage)  # type: ignore
 
     objects = models.Manager()
 

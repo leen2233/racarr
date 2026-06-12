@@ -75,7 +75,7 @@ async function addComic(id){
 
   const data = {monitor: monitor, format: format, volume_folder: volume_folder, tags: tags, id: id, search_missing: search_missing};
   try {
-    const response = await fetch("/api/add-comic", {
+    const response = await fetch("/api/comic", {
       method: "POST",
       body: JSON.stringify(data),
       headers: {
