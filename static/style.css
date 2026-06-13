@@ -825,22 +825,22 @@ button.danger:hover {
   color: #d0d0d0;
 }
 
-.issues-list .table .td.actions .actions-container {
+.issues-list .table .td .actions-container {
   display: flex;
   gap: 20px;
   align-items: center;
   justify-content: center;
 }
 
-.issues-list .table .td.actions i {
+.issues-list .table .td .actions-container i {
   cursor: pointer;
 }
 
-.issues-list .table .td.actions i:hover {
+.issues-list .table .td .actions-container i:hover {
   color: grey;
 }
 
-.issues-list .table .td.actions a {
+.issues-list .table .td .actions-container a {
   color: white;
   text-decoration: none;
 }

@@ -33,47 +33,7 @@
       <p class="description">{{comic.description|safe|linebreaksbr}}</p>
     </div>
   </div>
-  <div class="issues-list">
-    <div id="wrapper"></div>
-
-    {%comment%}
-    <table>
-      <tr>
-        <th>#</th>
-        <th>Title</th>
-        <th>Year</th>
-        <th>Volume</th>
-        <th>Issue</th>
-        <th>Status</th>
-        <th>Size</th>
-        <th>Actions</th>
-      </tr>
-    {% for issue in comic.issues.all %}
-      <tr>
-        <td class="id">{{issue.priority}}</td>
-        <td class="name">{{issue.original_text}}</td>
-        <td class="year">{{issue.year}}</td>
-        <td class="volume">{{issue.volume}}</td>
-        <td class="issue">{{issue.issue|floatformat}}</td>
-        <td class="status">{% if not issue.file %}<i title="Issue missing from disk" class="fa fa-exclamation-triangle"></i>{% else %}<i class="fa fa-check-circle success"></i>{% endif %}</td>
-        <td class="size">{% if not issue.file %}{% else %}{{issue.file.size | format_size }}{% endif %}</td>
-        <td class="actions">
-          <div class="actions-container">
-            {% if not issue.file %}
-              {% if issue.queue %}
-                <i title="Status: {{issue.queue.status}}&#013;Priority: {{issue.queue.priority}}" id="{{issue.id}}" class="fa fa-cloud-download download"></i>
-              {% else %}
-                <i title="Download issue" id="{{issue.id}}" class="fa fa-download download" onClick="downloadIssue({{issue.id}})"></i>
-              {% endif %}
-            {% endif %}
-            {% if issue.source == "readallcomics" %}<a href="{{issue.remote_id}}"><i title="Open remote link" class="fa fa-external-link"></i>{% endif %}</a>
-          </div>
-        </td>
-      </tr>
-    {% endfor %}
-    </table>
-    {%endcomment%}
-  </div>
+  <div class="issues-list" id="wrapper"></div>
 </div>
 
 <script>
@@ -81,14 +41,46 @@
     new gridjs.Grid({
       columns: [
         "#", "Title", "Year", "Volume", "Issue", { 
-        name: 'Size',
-        formatter: (cell) => cell ? cell : gridjs.html(`<i title="Issue missing from disk" class="fa fa-exclamation-triangle"></i>`)
-      },
+          name: 'Size',
+          sort: false,
+          formatter: (cell) => cell ? cell : gridjs.html(`<i title="Issue missing from disk" class="fa fa-exclamation-triangle"></i>`)
+        },
+        {
+          name: "Actions",
+          sort: false,
+          formatter: (cell, row) => {
+            let html = `<div class="actions-container">`;
+
+            if (cell.filesize === 0) {
+              if (cell.queue) {
+                html += `<i title="Status: ${cell.queue.status}&#013;Priority: ${cell.queue.priority}"
+                           id="${cell.id}"
+                           class="fa fa-cloud-download download"></i>`;
+              } else {
+                html += `<i title="Download issue"
+                           id="${cell.id}"
+                           class="fa fa-download download"
+                           onClick="downloadIssue(${cell.id})"></i>`;
+              }
+            }
+
+            if (cell.source === "readallcomics") {
+              html += `
+                <a href="${cell.remote_id}" target="_blank">
+                  <i title="Open remote link" class="fa fa-external-link"></i>
+                </a>
+              `;
+            }
+            html += "</div>"
+
+            return gridjs.html(html);
+          }
+        },
       ],
       server: {
         url: '/api/comic/{{comic.id}}/issues?',
         then: data => data.results.map(issue => 
-          [issue.priority, issue.original_text, issue.year, issue.volume, issue.issue, issue.filesize]
+          [issue.priority, issue.original_text, issue.year, issue.volume, issue.issue, issue.filesize, issue]
         ),
         total: data => data.count
       },
