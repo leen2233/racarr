@@ -4,6 +4,7 @@ from django.conf import settings
 import os
 from app import sources # type: ignore
 from app.models import Comic, Queue
+from app.helpers import get_dir_size
 
 # Create your views here.
 def home(request):
@@ -72,6 +73,7 @@ def discover(request):
 def comic_detail_page(request, id):
     comic = Comic.objects.get(id=id)
     comic.folder = os.path.join(settings.BASE_DIR, settings.MEDIA_ROOT, comic.name)
+    comic.folder_size = get_dir_size(comic.folder)
 
     context = {
         "comic": comic,

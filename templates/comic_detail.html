@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 {% load tags %}
+{% load static %}
+{%block style%}
+  <link href="{% static 'gridjs/mermaid.min.css' %}" rel="stylesheet">
+{%endblock%}
+
 {%block home_active%}active{%endblock%}
 {%block home_group%}active{%endblock%}
 
@@ -18,16 +23,20 @@
       <h1>{{comic.name}}</h1>
       <div class="tags">
         <div class="tag"><i class="fa fa-building"></i>{{comic.publisher}}</div>
-        <div class="tag"><i class="fa "></i>{{comic.source}}</div>
-        <div class="tag"><i class="fa fa-files-o"></i>{{comic.folder}}</div>
-        <div class="tag"><i class="fa"></i>{{comic.monitor}}</div>
-        <div class="tag"><i class="fa"></i>{{comic.format}}</div>
+        <div class="tag"><i class="fa fa-link"></i>{{comic.source}}</div>
+        <div class="tag"><i class="fa fa-folder-o"></i>{{comic.folder}}</div>
+        <div class="tag"><i class="fa fa-folder"></i>{{comic.folder_size | format_size}}</div>
+        <div class="tag"><i class="fa fa-eye"></i>{{comic.monitor}}</div>
+        <div class="tag"><i class="fa fa-file-o"></i>{{comic.format}}</div>
         {% if comic.tags %}<div class="tag"><i class="fa fa-tags"></i>{{comic.tags}}</div>{% endif %}
       </div>
       <p class="description">{{comic.description|safe|linebreaksbr}}</p>
     </div>
   </div>
   <div class="issues-list">
+    <div id="wrapper"></div>
+
+    {%comment%}
     <table>
       <tr>
         <th>#</th>
@@ -36,6 +45,7 @@
         <th>Volume</th>
         <th>Issue</th>
         <th>Status</th>
+        <th>Size</th>
         <th>Actions</th>
       </tr>
     {% for issue in comic.issues.all %}
@@ -46,6 +56,7 @@
         <td class="volume">{{issue.volume}}</td>
         <td class="issue">{{issue.issue|floatformat}}</td>
         <td class="status">{% if not issue.file %}<i title="Issue missing from disk" class="fa fa-exclamation-triangle"></i>{% else %}<i class="fa fa-check-circle success"></i>{% endif %}</td>
+        <td class="size">{% if not issue.file %}{% else %}{{issue.file.size | format_size }}{% endif %}</td>
         <td class="actions">
           <div class="actions-container">
             {% if not issue.file %}
@@ -61,10 +72,64 @@
       </tr>
     {% endfor %}
     </table>
+    {%endcomment%}
   </div>
 </div>
 
 <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    new gridjs.Grid({
+      columns: [
+        "#", "Title", "Year", "Volume", "Issue", { 
+        name: 'Size',
+        formatter: (cell) => cell ? cell : gridjs.html(`<i title="Issue missing from disk" class="fa fa-exclamation-triangle"></i>`)
+      },
+      ],
+      server: {
+        url: '/api/comic/{{comic.id}}/issues?',
+        then: data => data.results.map(issue => 
+          [issue.priority, issue.original_text, issue.year, issue.volume, issue.issue, issue.filesize]
+        ),
+        total: data => data.count
+      },
+      search: {
+        server: {
+          url: (prev, keyword) => `${prev}&search=${keyword}`
+        }
+      },
+      pagination: {
+        limit: 100,
+        server: {
+          url: (prev, page, limit) => `${prev}&limit=${limit}&offset=${page * limit}`
+        }
+      },
+      sort: {
+        server: {
+          url: (prev, columns) => {
+            if (!columns.length) return prev;
+            
+            const col = columns[0];
+            const dir = col.direction === 1 ? '-' : '';
+            let colName = ['priority', 'original_text', 'year', 'volume', 'issue'][col.index];
+            
+            return `${prev}&ordering=${dir}${colName}`;
+         }
+        }
+      },
+      className: {
+        td: 'td',
+        table: 'table',
+        th: 'th',
+        tr: 'tr',
+        search: 'search',
+        footer: 'footer',
+        pagination: 'pagination',
+        paginationButton: 'pagination-button'
+      }
+    }).render(document.getElementById("wrapper"));
+      
+  })
+
   async function downloadIssue(id) {
     var icon = document.getElementById(id);
     icon.classList.remove("fa-download");
@@ -147,5 +212,6 @@
   }
 
 </script>
+<script src="{% static 'gridjs/gridjs.umd.js' %}"></script>
 {% endblock %}
 

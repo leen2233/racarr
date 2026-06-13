@@ -4,8 +4,9 @@ HIGH:
  [x] add new popup
  [x] comic detail page
  [ ] issue detail page
- [ ] my comics page
- [ ] comic downloading
+ [x] my comics page
+ [x] comic downloading
+ [x] queue management
 
 ---
 

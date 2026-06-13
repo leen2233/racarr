@@ -1,5 +1,8 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.generics import ListAPIView
+from rest_framework.filters import SearchFilter, OrderingFilter
 from django.shortcuts import reverse, get_object_or_404
 from rest_framework import status
 from django.core.cache import cache
@@ -11,6 +14,7 @@ import requests
 from app import sources # type: ignore
 from app.models import Comic, Issue, Genre, Queue
 from app.tasks import downloader
+from app.serializers import IssueSerializer
 
 
 @api_view(["GET"])
@@ -210,4 +214,16 @@ def delete_queue_item(request):
     queue = get_object_or_404(Queue, id=id)
     queue.delete()
     return Response({"status": "success"})
+
+
+class ListComicIssuesView(ListAPIView):
+    serializer_class = IssueSerializer
+    pagination_class = LimitOffsetPagination
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ["original_text"]
+    ordering_fields = ["priority", "original_text", "year", "volume", "issue", "file"]
+
+    def get_queryset(self):
+        comic = get_object_or_404(Comic, id=self.kwargs["comic_id"])
+        return comic.issues.all()
 
