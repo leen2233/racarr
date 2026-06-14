@@ -15,6 +15,9 @@ def home(request):
 
     context = {"comics": comics}
 
+    if request.headers.get("X-Partial-Content"):
+        return render(request, "partials/home.html", context=context)
+
     return render(request, "home.html", context=context)
 
 
@@ -40,11 +43,19 @@ def add_new(request):
         "default_source": default_source,
         "query": query
     }
-    print("query: " ,query)
+    
+    if request.headers.get("X-Partial-Content"):
+        return render(request, "partials/add_new.html", context=context)
+
     return render(request, "add_new.html", context=context)
 
 
 def settings_page(request):
+    context = {}
+
+    if request.headers.get("X-Partial-Content"):
+        return render(request, "partials/settings.html", context=context)
+
     return render(request, "settings.html")
 
 
@@ -66,6 +77,9 @@ def discover(request):
         "sources": sources_obj,
         "default_source": default_source
     }
+    
+    if request.headers.get("X-Partial-Content"):
+        return render(request, "partials/discover.html", context=context)
 
     return render(request, "discover.html", context=context)
 
@@ -79,6 +93,9 @@ def comic_detail_page(request, id):
         "comic": comic,
     }
 
+    if request.headers.get("X-Partial-Content"):
+        return render(request, "partials/comic_detail.html", context=context)
+
     return render(request, "comic_detail.html", context=context)
 
 
@@ -87,5 +104,9 @@ def activity(request):
     context = {
             "queue": queue
     }
+    
+    if request.headers.get("X-Partial-Content"):
+        return render(request, "partials/activity.html", context=context)
+
     return render(request, "activity.html", context=context)
 

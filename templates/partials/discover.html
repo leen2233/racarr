@@ -1,0 +1,36 @@
+{% load tags %}
+
+<div id="toolbar">
+  <p>Source:</p>
+  <select id="source">
+    {% for source in sources %}
+    <option value="{{source.id}}" {%if source.selected %} selected {%endif%}>{{source.name}}</option>
+    {% endfor %}
+  </select>
+  <button class="active" onClick="changeSource()">Search</button>
+</div>
+<div class="loading" id="loading" style="display: none"><div></div><div></div></div>
+<div class="error" id="error" style="display: none">
+  <p>Couldn't fetch discover data. <span id="error-message"></span><br /></p><button onClick="changeSource()">Retry</button>
+</div>
+{% if discover_data %}
+  <div id="discover-container" data-initialized="1">
+    {% for item in discover_data %}
+      <div class="discover-item">
+        <img src="{{item.cover}}" loading='lazy'>
+        <div>
+          <h3>{{item.name}}</h3>
+          <div class="info-container">
+            <div class="info"><i class="fa fa-calendar"></i>{{item.year}}</div>
+            <div class="info"><i class="fa fa-building"></i>{{item.publisher}}</div>
+            <div class="info"><i class="fa fa-tags"></i>{{ item.genres | format_genres }}</div>
+            <div class="info"><i class="fa fa-files-o"></i>{{item.total_issues}} issues</div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div id="discover-container" data-initialized="0" data-default-source="{{default_source}}"></div>
+{% endif %}
+

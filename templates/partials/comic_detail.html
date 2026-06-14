@@ -1,0 +1,30 @@
+{% load tags %}
+{% load static %}
+
+<div id="toolbar">
+  <button class="active" onClick="searchAllMissing({{comic.id}})">Search missing</button>
+  <button class="danger" onClick="deleteComic({{comic.id}})">Delete</button>
+</div>
+
+<div class="comic-detail-container">
+  <div class="cover-info">
+    <div class="cover">
+      <img src="{{comic.cover.url}}" />
+    </div>
+    <div class="info">
+      <h1>{{comic.name}}</h1>
+      <div class="tags">
+        <div class="tag"><i class="fa fa-building"></i>{{comic.publisher}}</div>
+        <div class="tag"><i class="fa fa-link"></i>{{comic.source}}</div>
+        <div class="tag"><i class="fa fa-folder-o"></i>{{comic.folder}}</div>
+        <div class="tag"><i class="fa fa-folder"></i>{{comic.folder_size | format_size}}</div>
+        <div class="tag"><i class="fa fa-eye"></i>{{comic.monitor}}</div>
+        <div class="tag"><i class="fa fa-file-o"></i>{{comic.format}}</div>
+        {% if comic.tags %}<div class="tag"><i class="fa fa-tags"></i>{{comic.tags}}</div>{% endif %}
+      </div>
+      <p class="description">{{comic.description|safe|linebreaksbr}}</p>
+    </div>
+  </div>
+  <div class="issues-list" id="comic-detail-issues-wrapper" data-initialized="0" data-comic-id="{{comic.id}}"></div>
+</div>
+

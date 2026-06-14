@@ -1,0 +1,14 @@
+{% load tags %}
+
+<div class="home-comics-container">
+  {% for comic in comics %}
+    <div class="comic-item" onClick="getAndChange('{% url 'comic-detail' comic.id %}')">
+      <img src={{comic.cover.url}} />
+      <div class="progress">
+        <div class="downloaded" style="width: {{comic | get_downloaded_width}}%"></div>
+      </div>
+      <p>{{comic.name}}</p>{{comic.test}}
+    </div>
+  {% endfor %}
+</div>
+

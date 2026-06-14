@@ -7,6 +7,7 @@ HIGH:
  [x] my comics page
  [x] comic downloading
  [x] queue management
+ [x] notifications
 
 ---
 
@@ -16,6 +17,7 @@ MEDIUM:
  [ ] settings page
  [ ] proxy usage
  [ ] load custom font
+ [ ] format conversion
  [ ] authentication / authorization
 
 ---
