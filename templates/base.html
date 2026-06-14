@@ -15,7 +15,7 @@
   <body>
     <div class="header">
       <div class="logo-search">
-        <a href="/"><img src="{% static 'logo.png' %}" width=120 /></a>
+        <div onClick="getAndChange('/')"><img src="{% static 'logo.png' %}" width=120 style="cursor:pointer" /></div>
         <div class="search-bar">
           <i class="fa fa-search"></i>
           <input placeholder="Search" />
@@ -25,20 +25,20 @@
     </div>
     <div class="body">
       <div class="navbar">
-        <div class="navbar-group active">
-          <div class="navbar-item" onClick="getAndChange('/')"><i class="fa fa-book" aria-hidden="true"></i><p>Comics</p></div>
-          <div class="navbar-item navbar-child" onClick="getAndChange('/add')">Add New</div>
-          <div class="navbar-item navbar-child" onClick="getAndChange('/discover')">Discover</div>
+        <div class="navbar-group" id="home">
+          <div class="navbar-item" id="home-home" onClick="getAndChange('/')"><i class="fa fa-book" aria-hidden="true"></i><p>Comics</p></div>
+          <div class="navbar-item navbar-child" id="home-add-new" onClick="getAndChange('/add')">Add New</div>
+          <div class="navbar-item navbar-child" id="home-discover" onClick="getAndChange('/discover')">Discover</div>
         </div>
-        <div class="navbar-group">
-          <div class="navbar-item" onClick="getAndChange('/activity')"><i class="fa fa-clock-o" aria-hidden="true"></i><p>Activity</p></div>
+        <div class="navbar-group" id="activity">
+          <div class="navbar-item" id="activity-activity" onClick="getAndChange('/activity')"><i class="fa fa-clock-o" aria-hidden="true"></i><p>Activity</p></div>
         </div>
-        <div class="navbar-group">
-          <div class="navbar-item" onClick="getAndChange('/settings')"><i class="fa fa-cogs"></i><p>Settings</p></div>
-          <div class="navbar-item navbar-child">General</a></div>
+        <div class="navbar-group" id="settings">
+          <div class="navbar-item" id="settings-settings" onClick="getAndChange('/settings')"><i class="fa fa-cogs"></i><p>Settings</p></div>
+          <div class="navbar-item navbar-child" id="settings-general">General</a></div>
         </div>
-        <div class="navbar-group">
-          <div class="navbar-item"><i class="fa fa-laptop"></i><p>System</p></div>
+        <div class="navbar-group" id="system">
+          <div class="navbar-item" id="system-system"><i class="fa fa-laptop"></i><p>System</p></div>
         </div>
         <div class="notifications" id="notifications"></div>
       </div>
