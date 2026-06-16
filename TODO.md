@@ -33,3 +33,4 @@ LOW:
 - [ ] torrent integration
 - [ ] docker build
 - [ ] use variables at css and make design fully customizable
+- [ ] paginaiton and table improvements at activity page

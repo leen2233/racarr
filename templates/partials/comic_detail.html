@@ -2,8 +2,14 @@
 {% load static %}
 
 <div id="toolbar">
-  <button class="active" onClick="searchAllMissing({{comic.id}})">Search missing</button>
-  <button class="danger" onClick="deleteComic({{comic.id}})">Delete</button>
+  <div class="toolbar-button" onClick="searchAllMissing({{comic.id}})">
+    <i class="fa fa-search"></i>
+    <p class="title">Search Missing</p>
+  </div>
+  <div class="toolbar-button" onClick="deleteComic({{comic.id}})">
+    <i class="fa fa-trash"></i>
+    <p class="title">Delete</p>
+  </div>
 </div>
 
 <div class="comic-detail-container">

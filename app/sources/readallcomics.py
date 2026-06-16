@@ -293,6 +293,13 @@ class ReadAllComics(Source):
             if source:
                 urls.append(source)
 
+        if not urls:
+            if "Just a moment" in str(html):
+                return (
+                    None,
+                    "Cloudflare blocked the request. Please consider using proxy.",
+                )
+
         return urls, None
 
     def _get_volume_number(self, text: str) -> int:

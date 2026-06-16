@@ -6,7 +6,7 @@ from django.shortcuts import render
 
 from app import sources  # type: ignore
 from app.helpers import get_dir_size
-from app.models import Comic, Queue
+from app.models import Comic, Queue, Settings
 
 
 # Create your views here.
@@ -56,12 +56,14 @@ def add_new(request):
 
 
 def settings_page(request):
-    context = {}
+    settings = Settings.get_or_create()
+
+    context = {"settings": settings}
 
     if request.headers.get("X-Partial-Content"):
         return render(request, "partials/settings.html", context=context)
 
-    return render(request, "settings.html")
+    return render(request, "settings.html", context=context)
 
 
 def discover(request):

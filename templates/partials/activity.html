@@ -16,7 +16,14 @@
       <td class="name">{{item.issue.original_text}}</td>
       <td class="volume">{{item.issue.volume}}</td>
       <td class="issue">{{item.issue.issue|floatformat}}</td>
-      <td class="status">{{item.status | capfirst}}</td>
+      <td class="status">
+        {{item.status | capfirst}}
+        {% if item.status == "error" and item.status|length > 100 %}
+          <div class="error-message-extended closed">{{item.error_message}}</div>
+        {% else %}
+          <div class="error-message">{{item.error_message}}</div>
+        {% endif %}
+      </td>
       <td class="actions">
         <div class="actions-container">
           <i class="fa fa-repeat" id="retry-{{item.id}}" onClick="retryQueueItem({{item.id}})" title="Retry Download"></i>

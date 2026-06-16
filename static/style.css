@@ -269,7 +269,7 @@ button.danger:hover {
   background-color: #262626;
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
+  justify-content: flex-start;
   align-items: center;
   gap: 10px;
   color: white;
@@ -284,6 +284,38 @@ button.danger:hover {
   background-color: transparent;
   color: white;
   padding: 0 10px;
+}
+
+#toolbar .toolbar-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: #e1e2e3;
+  cursor: pointer;
+  width: 60px;
+  text-align: center;
+}
+
+#toolbar .toolbar-button i {
+  font-size: 21px;
+}
+
+#toolbar .toolbar-button .title {
+  margin: 0;
+  font-size: 12px;
+  line-height: 14px;
+  height: 24px;
+  align-content: center;
+}
+
+#toolbar .toolbar-button:hover {
+  color: grey;
+}
+
+#toolbar .toolbar-button.disabled {
+  color: grey;
+  cursor: default;
 }
 
 /* End Discover styles */
@@ -950,8 +982,7 @@ button.danger:hover {
 
 .activity-list table td.volume,
 .activity-list table td.issue,
-.activity-list table td.actions,
-.activity-list table td.status {
+.activity-list table td.actions {
   width: 100px;
 }
 
@@ -977,4 +1008,81 @@ button.danger:hover {
 .activity-list table td.actions a {
   color: white;
   text-decoration: none;
+}
+
+.activity-list table td.status .error-message {
+  color: #ff3838;
+}
+
+.activity-list table td.status .error-message-extended.closed {
+  display: none;
+}
+
+/* Settings page styles */
+.settings-container {
+  padding: 20px;
+}
+
+.settings-container .group-header {
+  display: block;
+  margin-bottom: 21px;
+  padding: 0;
+  width: 100%;
+  color: #ccc;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.settings-container .group-item {
+  display: flex;
+  margin-bottom: 20px;
+  align-items: flex-start;
+  max-width: 650px;
+}
+
+.settings-container .group-item .title {
+  flex: 0 0 250px;
+  display: flex;
+  justify-content: flex-end;
+  margin: 0;
+  margin-right: 20px;
+  padding-top: 8px;
+  min-height: 35px;
+  text-align: end;
+  font-weight: bold;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.settings-container .group-item .input-tip {
+  flex: 1 1 auto;
+}
+
+.settings-container .group-item .input-tip .input {
+  width: 100%;
+  height: 35px;
+  background-color: #333;
+  color: #ccc;
+  border: 1px solid #dde6e9;
+  border-radius: 4px;
+  padding: 6px 16px;
+}
+
+.settings-container .group-item .input-tip .tip {
+  margin: 0;
+  margin-top: 5px;
+  color: #909293;
+  line-height: 20px;
+  font-size: 14px;
+}
+
+.settings-container .group-item .input:focus {
+  outline: 0;
+  border-color: #66afe9;
+  box-shadow:
+    inset 0 1px 1px rgba(0, 0, 0, 0.075),
+    0 0 8px rgba(102, 175, 233, 0.6);
+}
+
+.settings-container .group-item .input.checkbox {
+  width: 20px;
 }

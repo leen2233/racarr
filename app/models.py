@@ -116,3 +116,21 @@ class Queue(models.Model):
 
     class Meta:
         ordering = ["-id"]
+
+
+class Settings(models.Model):
+    # Proxy Settings
+    use_proxy = models.BooleanField(default=False)
+    proxy_type = models.CharField(max_length=10, blank=True, null=True)
+    proxy_host = models.CharField(max_length=255, blank=True, null=True)
+    proxy_port = models.CharField(max_length=255, blank=True, null=True)
+    proxy_username = models.CharField(max_length=255, blank=True, null=True)
+    proxy_password = models.CharField(max_length=255, blank=True, null=True)
+
+    objects = models.Manager()
+
+    @classmethod
+    def get_or_create(cls):
+        if cls.objects.count() > 0:
+            return cls.objects.first()
+        cls.objects.create()
