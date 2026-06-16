@@ -1,20 +1,20 @@
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.generics import ListAPIView
-from rest_framework.filters import SearchFilter, OrderingFilter
-from django.shortcuts import reverse, get_object_or_404
-from rest_framework import status
+import requests
 from django.core.cache import cache
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
+from django.shortcuts import get_object_or_404, reverse
 from django_eventstream import send_event
-import requests
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.generics import ListAPIView
+from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.response import Response
 
-from app import sources # type: ignore
-from app.models import Comic, Issue, Genre, Queue
-from app.tasks import downloader
+from app import sources  # type: ignore
+from app.models import Comic, Genre, Issue, Queue
 from app.serializers import IssueSerializer
+from app.tasks import downloader
 
 
 @api_view(["GET"])
@@ -59,7 +59,9 @@ def search_remote(request):
     try:
         source_instance = getattr(sources, source)
     except Exception:
-        return Response({"error": "Source not found"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "Source not found"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
     result, error = source_instance.search(query)
 
@@ -95,24 +97,26 @@ def comic(request):
         try:
             source_instance = getattr(sources, source)
         except Exception:
-            return Response({"error": "Source not found"}, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response(
+                {"error": "Source not found"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
         comic, error = source_instance.get(id)
         if error:
             return Response({"error": error}, status=status.HTTP_400_BAD_REQUEST)
 
         comic_obj = Comic.objects.create(
-                    name = comic.name,
-                    description = comic.description,
-                    year = comic.year,
-                    remote_id = comic.id,
-                    source = source,
-                    publisher = comic.publisher,
-                    monitor = monitor,
-                    format = format,
-                    volume_folder = volume_folder,
-                    tags = tags
-                )
+            name=comic.name,
+            description=comic.description,
+            year=comic.year,
+            remote_id=comic.id,
+            source=source,
+            publisher=comic.publisher,
+            monitor=monitor,
+            format=format,
+            volume_folder=volume_folder,
+            tags=tags,
+        )
 
         # save genres
         for item in comic.genres:
@@ -128,8 +132,10 @@ def comic(request):
                 img_temp.flush()
                 comic_obj.cover.save("cover.jpg", File(img_temp), save=True)
             else:
-                print(f"Couldn't download cover, response status code: {response.status_code}")
-             
+                print(
+                    f"Couldn't download cover, response status code: {response.status_code}"
+                )
+
         except Exception as e:
             print(f"Couldn't download cover for comic, error: {e}")
 
@@ -137,19 +143,19 @@ def comic(request):
         issues_to_save = []
         for item in comic.issues:
             issue = Issue(
-                    comic = comic_obj,
-                    name = item.name,
-                    original_text = item.original_text,
-                    volume = item.volume,
-                    issue = item.issue,
-                    is_annual = item.is_annual,
-                    priority = item.priority,
-                    remote_id = item.id,
-                    source = source,
-                    year = item.year,
-                )
+                comic=comic_obj,
+                name=item.name,
+                original_text=item.original_text,
+                volume=item.volume,
+                issue=item.issue,
+                is_annual=item.is_annual,
+                priority=item.priority,
+                remote_id=item.id,
+                source=source,
+                year=item.year,
+            )
             issues_to_save.append(issue)
-        
+
         Issue.objects.bulk_create(issues_to_save)
 
         if search_missing:
@@ -168,17 +174,19 @@ def comic(request):
         return Response({"status": "success"})
 
 
-
 @api_view(["POST"])
 def download_issue(request):
     id = request.data.get("id")
+    print(id)
     issue = get_object_or_404(Issue, id=id)
 
     queue, _ = Queue.objects.get_or_create(issue=issue)
 
-    downloader.delay_on_commit(queue.id)    
+    downloader.delay_on_commit(queue.id)
 
-    send_event("messages", "message", {"text": f"{queue.issue} added to queue", "type": "info"})
+    send_event(
+        "messages", "message", {"text": f"{queue.issue} added to queue", "type": "info"}
+    )
     return Response({"status": "success"})
 
 
@@ -194,7 +202,11 @@ def search_all_missing(request):
             new_added_counter += 1
             downloader.delay_on_commit(queue.id)
 
-    send_event("messages", "message", {"text": f"{new_added_counter} issues added to queue", "type": "info"})
+    send_event(
+        "messages",
+        "message",
+        {"text": f"{new_added_counter} issues added to queue", "type": "info"},
+    )
     return Response({"status": "success"})
 
 
@@ -226,4 +238,3 @@ class ListComicIssuesView(ListAPIView):
     def get_queryset(self):
         comic = get_object_or_404(Comic, id=self.kwargs["comic_id"])
         return comic.issues.all()
-

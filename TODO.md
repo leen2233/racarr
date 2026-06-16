@@ -8,6 +8,7 @@ HIGH:
  [x] comic downloading
  [x] queue management
  [x] notifications
+ [x] download retry management
 
 ---
 

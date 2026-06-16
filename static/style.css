@@ -800,11 +800,11 @@ button.danger:hover {
 .issues-list .table {
   color: white;
   width: 100%;
-  padding: 0 10px;
   background-color: #333333;
   border: 1px solid #858585;
   border-radius: 4px;
   border-spacing: 0;
+  border-bottom: none;
 }
 
 .issues-list .table .tr:hover {
@@ -884,7 +884,8 @@ button.danger:hover {
 .issues-list .footer {
   background-color: #333333;
   border: 1px solid #858585;
-  color: white
+  border-radius: 4px;
+  color: white;
 }
 
 .issues-list .pagination {
@@ -894,6 +895,11 @@ button.danger:hover {
   justify-content: space-between;
   padding: 10px 20px;
   align-items: center;
+}
+
+.issues-list .gridjs-pages {
+  display: flex;
+  gap: 5px;
 }
 
 .issues-list .pagination-button {
