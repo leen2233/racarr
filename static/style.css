@@ -1,10 +1,11 @@
-:root{
-  --themeColor: #ed4a4a; 
+:root {
+  --themeColor: #ed4a4a;
 }
 
 * {
   box-sizing: border-box;
-  font-family: 'Roboto', 'open sans', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+  font-family:
+    "Roboto", "open sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 }
 
 html {
@@ -83,7 +84,7 @@ button.danger:hover {
 }
 
 .navbar-group.active {
-  border-left: 3px solid var(--themeColor)
+  border-left: 3px solid var(--themeColor);
 }
 
 .navbar div {
@@ -195,7 +196,6 @@ button.danger:hover {
   border-bottom-color: transparent;
 }
 
-
 .header .profile {
   color: white;
   font-size: 14px;
@@ -227,7 +227,7 @@ button.danger:hover {
   cursor: pointer;
 }
 
-.discover-item:hover{
+.discover-item:hover {
   background-color: #202020;
   box-shadow: 0 0 12px #000;
   color: inherit;
@@ -311,7 +311,6 @@ button.danger:hover {
   background-color: #2b2b2b;
   height: 100%;
   width: 48px;
-
 }
 
 .search-container .search-bar .search-icon {
@@ -344,7 +343,9 @@ button.danger:hover {
 
 .search-container .search-bar input:focus {
   border-color: #66afe9;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+  box-shadow:
+    inset 0 1px 1px rgba(0, 0, 0, 0.075),
+    0 0 8px rgba(102, 175, 233, 0.6);
 }
 
 .search-container .search-bar select {
@@ -360,14 +361,15 @@ button.danger:hover {
 
 .search-container .search-bar select:focus {
   border-color: #66afe9;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+  box-shadow:
+    inset 0 1px 1px rgba(0, 0, 0, 0.075),
+    0 0 8px rgba(102, 175, 233, 0.6);
 }
 
 .search-container .search-bar button.active {
   height: 100%;
   font-size: 16px;
 }
-
 
 #search-helper {
   font-size: 24px;
@@ -376,7 +378,6 @@ button.danger:hover {
   margin-top: 30px;
   text-align: center;
 }
-
 
 #search-comics-container {
   display: flex;
@@ -401,7 +402,7 @@ button.danger:hover {
   cursor: pointer;
 }
 
-.search-comic-item:hover{
+.search-comic-item:hover {
   background-color: #202020;
   box-shadow: 0 0 12px #000;
   color: inherit;
@@ -453,7 +454,6 @@ button.danger:hover {
   flex-direction: row;
   gap: 10px;
   flex-wrap: wrap;
-
 }
 
 .info-row .info {
@@ -467,7 +467,6 @@ button.danger:hover {
   font-weight: bold;
   border-radius: 2px;
 }
-
 
 /* End Search page */
 
@@ -569,12 +568,31 @@ button.danger:hover {
   margin: 3px 10px;
 }
 @keyframes l5 {
-    0%  {box-shadow: 10px 0 #fff, -10px 0 #fff2;background: #fff }
-    33% {box-shadow: 10px 0 #fff, -10px 0 #fff2;background: #fff2}
-    66% {box-shadow: 10px 0 #fff2,-10px 0 #fff; background: #fff2}
-    100%{box-shadow: 10px 0 #fff2,-10px 0 #fff; background: #fff }
+  0% {
+    box-shadow:
+      10px 0 #fff,
+      -10px 0 #fff2;
+    background: #fff;
+  }
+  33% {
+    box-shadow:
+      10px 0 #fff,
+      -10px 0 #fff2;
+    background: #fff2;
+  }
+  66% {
+    box-shadow:
+      10px 0 #fff2,
+      -10px 0 #fff;
+    background: #fff2;
+  }
+  100% {
+    box-shadow:
+      10px 0 #fff2,
+      -10px 0 #fff;
+    background: #fff;
+  }
 }
-
 
 /* Popup */
 
@@ -582,7 +600,7 @@ button.danger:hover {
   position: absolute;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   top: 0;
   left: 0;
   align-content: center;
@@ -629,7 +647,7 @@ button.danger:hover {
   gap: 4px;
 }
 
-#popup-container .popup .popup-content{
+#popup-container .popup .popup-content {
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -672,7 +690,7 @@ button.danger:hover {
 }
 
 #popup-container .popup .popup-content .form .form-item select,
-#popup-container .popup .popup-content .form .form-item .text-input{
+#popup-container .popup .popup-content .form .form-item .text-input {
   height: 35px;
   border: 1px solid white;
   border-radius: 4px;
@@ -684,7 +702,6 @@ button.danger:hover {
 #popup-container .popup .popup-content .form .form-item .checkbox {
   width: 14px;
 }
-
 
 /* Home page */
 .home-comics-container {
@@ -774,7 +791,6 @@ button.danger:hover {
   font-weight: normal;
 }
 
-
 .tags {
   display: flex;
   flex-wrap: wrap;
@@ -812,7 +828,7 @@ button.danger:hover {
 }
 
 .issues-list .table .th,
-.issues-list .table .td{
+.issues-list .table .td {
   border-top: 1px solid #858585;
   padding: 10px;
   text-align: left;
@@ -846,7 +862,7 @@ button.danger:hover {
 }
 
 .issues-list .table .th.gridjs-th-sort {
-  position: relative
+  position: relative;
 }
 
 .issues-list .table .gridjs-sort {
@@ -860,7 +876,7 @@ button.danger:hover {
 }
 
 .issues-list .table .gridjs-sort.gridjs-sort-desc {
-  background-image: url("data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2024%2024%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20fill%3D%22%23ffffff%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M4.29289%208.29289C4.68342%207.90237%205.31658%207.90237%205.70711%208.29289L12%2014.5858L18.2929%208.29289C18.6834%207.90237%2019.3166%207.90237%2019.7071%208.29289C20.0976%208.68342%2020.0976%209.31658%2019.7071%209.70711L12.7071%2016.7071C12.3166%2017.0976%2011.6834%2017.0976%2011.2929%2016.7071L4.29289%209.70711C3.90237%209.31658%203.90237%208.68342%204.29289%208.29289Z%22/%3E%3C/svg%3E"); 
+  background-image: url("data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2024%2024%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20fill%3D%22%23ffffff%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M4.29289%208.29289C4.68342%207.90237%205.31658%207.90237%205.70711%208.29289L12%2014.5858L18.2929%208.29289C18.6834%207.90237%2019.3166%207.90237%2019.7071%208.29289C20.0976%208.68342%2020.0976%209.31658%2019.7071%209.70711L12.7071%2016.7071C12.3166%2017.0976%2011.6834%2017.0976%2011.2929%2016.7071L4.29289%209.70711C3.90237%209.31658%203.90237%208.68342%204.29289%208.29289Z%22/%3E%3C/svg%3E");
 }
 
 .issues-list .table .gridjs-sort.gridjs-sort-neutral {
@@ -922,7 +938,7 @@ button.danger:hover {
 }
 
 .activity-list table th,
-.activity-list table td{
+.activity-list table td {
   border-top: 1px solid #858585;
   padding: 10px;
   text-align: left;
@@ -935,7 +951,7 @@ button.danger:hover {
 .activity-list table td.volume,
 .activity-list table td.issue,
 .activity-list table td.actions,
-.activity-list table td.status{
+.activity-list table td.status {
   width: 100px;
 }
 
@@ -962,4 +978,3 @@ button.danger:hover {
   color: white;
   text-decoration: none;
 }
-

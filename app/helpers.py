@@ -1,6 +1,7 @@
 import os
 
-def get_dir_size(path='.'):
+
+def get_dir_size(path="."):
     total = 0
     with os.scandir(path) as it:
         for entry in it:

@@ -1,12 +1,14 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
-from app.models import Issue, Queue
+
 from app.helpers import format_size
+from app.models import Issue, Queue
 
 
 class QueueSerializerMinimized(ModelSerializer):
     class Meta:
         model = Queue
-        fields = ["status", "priority"] 
+        fields = ["status", "priority"]
+
 
 class IssueSerializer(ModelSerializer):
     filesize = SerializerMethodField()
@@ -14,8 +16,18 @@ class IssueSerializer(ModelSerializer):
 
     class Meta:
         model = Issue
-        fields = ['id', 'priority', 'original_text', 'year', 'volume', 'issue', 
-                  'remote_id', 'source', 'filesize', 'queue']
+        fields = [
+            "id",
+            "priority",
+            "original_text",
+            "year",
+            "volume",
+            "issue",
+            "remote_id",
+            "source",
+            "filesize",
+            "queue",
+        ]
 
     def get_filesize(self, obj):
         if obj.file:
@@ -25,7 +37,6 @@ class IssueSerializer(ModelSerializer):
             return 0
 
     def get_queue(self, obj):
-        if hasattr(obj, 'queue'):
+        if hasattr(obj, "queue"):
             return QueueSerializerMinimized(obj.queue).data
         return None
-

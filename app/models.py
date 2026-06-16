@@ -1,5 +1,7 @@
-from django.db import models
 import os
+
+from django.db import models
+
 from app.storage import PreserveSpacesStorage
 
 
@@ -43,9 +45,11 @@ class Comic(models.Model):
     publisher = models.CharField(max_length=50)
     genres = models.ManyToManyField(Genre)
 
-    monitor = models.CharField(max_length=15, choices=MonitorType.choices, default="all")
-    format = models.CharField(max_length=20, default="cbz") 
-    volume_folder = models.BooleanField(default=True) # type: ignore
+    monitor = models.CharField(
+        max_length=15, choices=MonitorType.choices, default="all"
+    )
+    format = models.CharField(max_length=20, default="cbz")
+    volume_folder = models.BooleanField(default=True)  # type: ignore
     tags = models.TextField()
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -66,8 +70,8 @@ class Issue(models.Model):
     original_text = models.CharField(max_length=255, blank=True, null=True)
     volume = models.IntegerField(default=1)  # type: ignore
     issue = models.FloatField(blank=True, null=True)
-    is_annual = models.BooleanField(default=False) # type: ignore
-    priority = models.IntegerField(default=0) # type: ignore
+    is_annual = models.BooleanField(default=False)  # type: ignore
+    priority = models.IntegerField(default=0)  # type: ignore
     year = models.IntegerField(null=True, blank=True)
 
     remote_id = models.TextField()
@@ -91,12 +95,14 @@ class Queue(models.Model):
         ERROR = "error", "Error"
 
     issue = models.OneToOneField(Issue, on_delete=models.CASCADE, related_name="queue")
-    status = models.CharField(max_length=20, choices=Statuses.choices, default="pending")
+    status = models.CharField(
+        max_length=20, choices=Statuses.choices, default="pending"
+    )
     priority = models.IntegerField(default=0)
 
     error_message = models.TextField(null=True, blank=True)
-    next_try = models.DateTimeField(null=True, blank=True) # if error, for timeout
-    
+    next_try = models.DateTimeField(null=True, blank=True)  # if error, for timeout
+
     objects = models.Manager()
 
     def set_status_error(self, error: str):
@@ -110,4 +116,3 @@ class Queue(models.Model):
 
     class Meta:
         ordering = ["-id"]
-
