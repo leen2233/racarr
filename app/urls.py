@@ -29,5 +29,15 @@ urlpatterns = [
     path("api/search-all-missing", search_all_missing),
     path("api/retry-queue-item", retry_queue_item),
     path("api/delete-queue-item", delete_queue_item),
-    path("api/events/", include(django_eventstream.urls), {"channels": ["messages"]}),
+    # Events
+    path(
+        "api/events/notifications",
+        include(django_eventstream.urls),
+        {"channels": ["messages"]},
+    ),
+    path(
+        "api/events/activity",
+        include(django_eventstream.urls),
+        {"channels": ["activity"]},
+    ),
 ]

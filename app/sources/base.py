@@ -1,8 +1,9 @@
-from typing import Optional, Tuple
+from typing import Callable, Optional, Tuple
 from urllib.parse import urljoin
+
 import cloudscraper
 
-from app.types import SearchItem, Comic
+from app.types import Comic, SearchItem
 
 
 class Source:
@@ -35,20 +36,28 @@ class Source:
         """
         return None, "This function is not implemented in this source"
 
-    def download(self, id: str) -> Tuple[Optional[str], Optional[str]]:
+    def download(
+        self, id: str, progress: Callable
+    ) -> Tuple[Optional[str], Optional[str]]:
         """
         Downloads given issue from source
+
+        Args:
+            id (str): id of issue at remote source.
+            progress (Callable): callable to give to report download progress in percentage.
 
         Returns path to downloaded file, or error message
         """
         return None, "This function is not implemented in this source"
 
-    def _make_request(self, 
-                      path: str, 
-                      method: str="GET", 
-                      params: dict={}, 
-                      data: dict={}, 
-                      headers: dict={}):
+    def _make_request(
+        self,
+        path: str,
+        method: str = "GET",
+        params: dict = {},
+        data: dict = {},
+        headers: dict = {},
+    ):
 
         url = urljoin(self.BASE_URL, path)
 
@@ -61,6 +70,6 @@ class Source:
         elif method.lower() == "delete":
             return self.cs.delete(url, params=params, data=data, headers=headers)
         else:
-            raise NotImplementedError(f"This request type is not implemented: {method}.")
-
-
+            raise NotImplementedError(
+                f"This request type is not implemented: {method}."
+            )

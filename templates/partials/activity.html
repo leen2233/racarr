@@ -1,7 +1,7 @@
 {% load tags %}
 
 <div class="activity-list">
-  <table>
+  <table id="activity-table">
     <tr>
       <th>Priority</th>
       <th>Title</th>
@@ -16,7 +16,7 @@
       <td class="name">{{item.issue.original_text}}</td>
       <td class="volume">{{item.issue.volume}}</td>
       <td class="issue">{{item.issue.issue|floatformat}}</td>
-      <td class="status">{{item.status}}</td>
+      <td class="status">{{item.status | capfirst}}</td>
       <td class="actions">
         <div class="actions-container">
           <i class="fa fa-repeat" id="retry-{{item.id}}" onClick="retryQueueItem({{item.id}})" title="Retry Download"></i>

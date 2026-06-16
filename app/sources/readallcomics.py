@@ -1,22 +1,24 @@
-import re
-import zipfile
-import random
-import string
 import os
-from app.types import SearchItem, Issue, Comic
-from typing import Tuple, Optional
+import random
+import re
+import string
+import zipfile
+from typing import Optional, Tuple
+
 from bs4 import BeautifulSoup as BS
-from bs4.element import Tag, NavigableString
+from bs4.element import NavigableString, Tag
 from django.conf import settings
+
+from app.types import Comic, Issue, SearchItem
 
 from .base import Source
 
-
 YEAR_REGEX = r"\d{4}"
 TOTAL_ISSUES_REGEX = r"\d+"
-VOLUME_REGEX = r'\b(?:v|vol)\.?\s*(\d+)'
-YEAR_REGEX = r'\(?([1-9]\d{3})\)?'
-ANNUAL_REGEX = r'\b(annual|special)\b'
+VOLUME_REGEX = r"\b(?:v|vol)\.?\s*(\d+)"
+YEAR_REGEX = r"\(?([1-9]\d{3})\)?"
+ANNUAL_REGEX = r"\b(annual|special)\b"
+
 
 class ReadAllComics(Source):
     NAME = "ReadAllComics"
@@ -53,7 +55,7 @@ class ReadAllComics(Source):
         result = self._parse_comic_from_response(res.content, id)
         return result
 
-    def download(self, id):
+    def download(self, id, progress):
         try:
             res = self._make_request(id)
         except Exception as e:
@@ -67,7 +69,9 @@ class ReadAllComics(Source):
             return None, "Couldn't find images from this url"
 
         # random filename
-        output_filename = ''.join(random.choice(string.ascii_lowercase) for i in range(20)) + ".cbz"
+        output_filename = (
+            "".join(random.choice(string.ascii_lowercase) for i in range(20)) + ".cbz"
+        )
         output_path = os.path.join(settings.TEMP_DIR, output_filename)
 
         with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as archieve:
@@ -79,7 +83,17 @@ class ReadAllComics(Source):
                     archieve.writestr(img_filename, response.content)
 
                 except Exception as e:
-                    return None, "Couldn't download image from url: " + url + ".\n Error:" + str(e)
+                    return (
+                        None,
+                        "Couldn't download image from url: "
+                        + url
+                        + ".\n Error:"
+                        + str(e),
+                    )
+
+                if i % 5 == 0:
+                    percentage = int(100 / len(image_urls) * i)
+                    progress(percentage)
 
         # verify cbz file
         with zipfile.ZipFile(output_path, "r") as archieve:
@@ -88,7 +102,9 @@ class ReadAllComics(Source):
 
         return output_path, None
 
-    def _parse_comics_from_response(self, html) -> Tuple[Optional[list[SearchItem]], str]:
+    def _parse_comics_from_response(
+        self, html
+    ) -> Tuple[Optional[list[SearchItem]], str]:
         if not html:
             return None, "No html is given"
 
@@ -112,7 +128,7 @@ class ReadAllComics(Source):
                 cover = str(cover["src"])
             else:
                 cover = None
-            
+
             name_element = item.find("a", {"class": "cat-title"})
             if name_element:
                 url = str(name_element["href"])
@@ -162,7 +178,6 @@ class ReadAllComics(Source):
             result.append(comic)
 
         return result, ""
-     
 
     def _parse_comic_from_response(self, html, id):
         if not html:
@@ -181,31 +196,31 @@ class ReadAllComics(Source):
         cover = div.find("img")
 
         if cover:
-            cover = str(cover["src"]) # type: ignore
+            cover = str(cover["src"])  # type: ignore
         else:
             cover = None
 
         name = div.find("h1")
         if name:
-            name = name.text.strip() # type: ignore
+            name = name.text.strip()  # type: ignore
         else:
             name = None
 
         genres = []
         publisher = None
-        p = div.find("div", {"class": "b"}).find("p") # type: ignore
+        p = div.find("div", {"class": "b"}).find("p")  # type: ignore
         if p:
-            for text in p.text.strip().split("\n"): # type: ignore
+            for text in p.text.strip().split("\n"):  # type: ignore
                 text = text.strip()
                 if text.startswith("Genres:"):
                     genres = text.replace("Genres:", "").strip().split(", ")
                 elif text.startswith("Publisher:"):
                     publisher = text.replace("Publisher:", "").strip()
 
-        div = div.find("div", {"class": "b"}) # type: ignore
-        
+        div = div.find("div", {"class": "b"})  # type: ignore
+
         description = ""
-        for item in div.children: # type: ignore
+        for item in div.children:  # type: ignore
             if isinstance(item, Tag):
                 if item.name == "span":
                     description += f"<span>{item.text}</span>\n"
@@ -234,26 +249,30 @@ class ReadAllComics(Source):
                 year = self._get_year(text)
                 is_annual = self._get_is_annual(text)
 
-                issue = Issue(volume=volume_number,
-                              issue=issue_number,
-                              original_text=text,
-                              year=year,
-                              is_annual=is_annual,
-                              id=url,
-                              name="",
-                              priority=issue_count - counter)
+                issue = Issue(
+                    volume=volume_number,
+                    issue=issue_number,
+                    original_text=text,
+                    year=year,
+                    is_annual=is_annual,
+                    id=url,
+                    name="",
+                    priority=issue_count - counter,
+                )
                 issues.append(issue)
                 counter += 1
 
-        comic = Comic(name=name,
-                      id=id,
-                      description=description,
-                      cover=cover,
-                      publisher=publisher,
-                      genres=genres,
-                      year=0,
-                      total_issues=len(issues),
-                      issues=issues)
+        comic = Comic(
+            name=name,
+            id=id,
+            description=description,
+            cover=cover,
+            publisher=publisher,
+            genres=genres,
+            year=0,
+            total_issues=len(issues),
+            issues=issues,
+        )
 
         return comic, None
 
@@ -275,7 +294,6 @@ class ReadAllComics(Source):
                 urls.append(source)
 
         return urls, None
-       
 
     def _get_volume_number(self, text: str) -> int:
         match = re.search(VOLUME_REGEX, text, re.IGNORECASE)
@@ -285,23 +303,23 @@ class ReadAllComics(Source):
 
     def _get_issue_number(self, text: str) -> Optional[float]:
         # remove year in parentheses to avoid matching it
-        text = re.sub(r'\s*[\(\[].*?[\)\]]\s*$', '', text)
+        text = re.sub(r"\s*[\(\[].*?[\)\]]\s*$", "", text)
 
         # remove volume part completely (v, vol, part, etc.)
-        text = re.sub(r'\b(?:v|vol|part)\.?\s*\d+', '', text, flags=re.IGNORECASE)
+        text = re.sub(r"\b(?:v|vol|part)\.?\s*\d+", "", text, flags=re.IGNORECASE)
 
         # match issue:
         # prefer #number first, otherwise last standalone number (with optional .1)
-        match = re.search(r'#\s*(\d+(?:\.\d+)?)', text)
+        match = re.search(r"#\s*(\d+(?:\.\d+)?)", text)
         if match:
             num = match.group(1)
-            return float(num) if '.' in num else float(num)
+            return float(num) if "." in num else float(num)
 
         # get last number in string (avoids picking years or earlier numbers like 94)
-        matches = re.findall(r'\b\d+(?:\.\d+)?', text)
+        matches = re.findall(r"\b\d+(?:\.\d+)?", text)
         if matches:
             num = matches[-1]
-            return float(num) if '.' in num else float(num)
+            return float(num) if "." in num else float(num)
 
         return None
 
@@ -313,4 +331,3 @@ class ReadAllComics(Source):
 
     def _get_is_annual(self, text: str) -> bool:
         return bool(re.search(ANNUAL_REGEX, text, re.IGNORECASE))
-
