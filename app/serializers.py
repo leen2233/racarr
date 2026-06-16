@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
 from app.helpers import format_size
-from app.models import Issue, Queue
+from app.models import Issue, Queue, Settings
 
 
 class QueueSerializerMinimized(ModelSerializer):
@@ -40,3 +40,16 @@ class IssueSerializer(ModelSerializer):
         if hasattr(obj, "queue"):
             return QueueSerializerMinimized(obj.queue).data
         return None
+
+
+class SettingsUpdateSerializer(ModelSerializer):
+    class Meta:
+        model = Settings
+        fields = [
+            "use_proxy",
+            "proxy_type",
+            "proxy_host",
+            "proxy_port",
+            "proxy_username",
+            "proxy_password",
+        ]

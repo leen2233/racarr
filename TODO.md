@@ -11,6 +11,10 @@ HIGH:
 - [x] notifications
 - [x] download retry management
 - [ ] show error message at activity table
+- [ ] close activity event on page change
+- [ ] add settings serializer validation and error message
+- [ ] functions inside script tags doesnt work when loaded from partial
+- [ ] cache settings to avoid so many hits on database
 
 ---
 

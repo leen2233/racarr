@@ -3,7 +3,7 @@ from urllib.parse import urljoin
 
 import cloudscraper
 
-from app.types import Comic, SearchItem
+from app.types import Comic, ProxyConfig, SearchItem
 
 
 class Source:
@@ -18,32 +18,38 @@ class Source:
 
         pass
 
-    def search(self, query: str) -> Tuple[Optional[list[SearchItem]], Optional[str]]:
+    def search(
+        self, query: str, proxy_config: Optional[ProxyConfig]
+    ) -> Tuple[Optional[list[SearchItem]], Optional[str]]:
         """
         Returns SearchItem list or error string
         """
         return None, "This function is not implemented in this source"
 
-    def get(self, id: str) -> Tuple[Optional[Comic], Optional[str]]:
+    def get(
+        self, id: str, proxy_config: Optional[ProxyConfig]
+    ) -> Tuple[Optional[Comic], Optional[str]]:
         """
         Returns Comic or error string
         """
         return None, "This function is not implemented in this source"
 
-    def discover(self) -> Tuple[Optional[list[SearchItem]], Optional[str]]:
+    def discover(
+        self, proxy_config: Optional[ProxyConfig]
+    ) -> Tuple[Optional[list[SearchItem]], Optional[str]]:
         """
         Returns SearchItem or error string
         """
         return None, "This function is not implemented in this source"
 
     def download(
-        self, id: str, progress: Callable
+        self, id: str, proxy_config: Optional[ProxyConfig], progress_callback: Callable
     ) -> Tuple[Optional[str], Optional[str]]:
         """
         Downloads given issue from source
 
         Args:
-            id (str): id of issue at remote source.
+        id (str): id of issue at remote source.
             progress (Callable): callable to give to report download progress in percentage.
 
         Returns path to downloaded file, or error message
@@ -73,3 +79,14 @@ class Source:
             raise NotImplementedError(
                 f"This request type is not implemented: {method}."
             )
+
+    def _reinitialize_cloudscraper(self, proxy_config: Optional[ProxyConfig]):
+        if proxy_config:
+            if proxy_config.username and proxy_config.password:
+                url = f"{proxy_config.username}:{proxy_config.password}@{proxy_config.host}:{proxy_config.port}"
+            else:
+                url = f"{proxy_config.host}:{proxy_config.port}"
+            proxies = {"http": url, "https": url}
+
+        self.cs.proxies = proxies
+        self.cs.trust_env = False

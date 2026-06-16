@@ -72,3 +72,12 @@ class Comic:
             "total_issues": self.total_issues,
             "issues": [issue.serialize() for issue in self.issues],
         }
+
+
+@dataclass
+class ProxyConfig:
+    type: str
+    host: str
+    port: str
+    username: str
+    password: str

@@ -1,8 +1,10 @@
 import os
+from typing import Optional
 
 from django.db import models
 
 from app.storage import PreserveSpacesStorage
+from app.types import ProxyConfig
 
 
 class Genre(models.Model):
@@ -134,3 +136,23 @@ class Settings(models.Model):
         if cls.objects.count() > 0:
             return cls.objects.first()
         cls.objects.create()
+        return cls.objects.first()
+
+    @classmethod
+    def get_proxy_settings(cls) -> Optional[ProxyConfig]:
+        settings = cls.get_or_create()
+        proxy = None
+        if (
+            settings.use_proxy
+            and settings.proxy_type
+            and settings.proxy_host
+            and settings.proxy_port
+        ):
+            proxy = ProxyConfig(
+                type=settings.proxy_type,
+                host=settings.proxy_host,
+                port=settings.proxy_port,
+                username=settings.proxy_username,
+                password=settings.proxy_password,
+            )
+        return proxy

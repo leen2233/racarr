@@ -15,7 +15,8 @@ function streamActivityEvent() {
           `Downloading (${data.progress}%)`;
         return;
       } else if (data.status == "error") {
-        row.querySelector(".status").innerHTML = "Error";
+        row.querySelector(".status").innerHTML =
+          `Error <div class="error-message">${data.error_message}</div>`;
       } else if (data.status == "completed") {
         row.parentNode.removeChild(row);
       }

@@ -1,5 +1,5 @@
 <div id="toolbar">
-  <div class="toolbar-button disabled" id="save-button">
+  <div class="toolbar-button disabled" id="save-button" onClick="saveSettings()">
     <i class="fa fa-floppy-o"></i>
     <p class="title" id="save-button-text">No Changes</p>
   </div>
@@ -82,6 +82,38 @@
     } else {
       document.getElementById("save-button").classList.add("disabled");
       document.getElementById("save-button-text").innerHTML = "No Changes";
+    }
+  }
+
+  async function saveSettings() {
+    const csrfToken = getCookie("csrftoken");
+
+    const data = {
+      use_proxy: document.getElementById("useProxy").checked,
+      proxy_type: document.getElementById("proxyType").value,
+      proxy_host: document.getElementById("proxyHost").value,
+      proxy_port: document.getElementById("proxyPort").value,
+      proxy_username: document.getElementById("proxyUsername").value,
+      proxy_password: document.getElementById("proxyPassword").value,
+    };
+
+    try {
+      const response = await fetch("/api/settings", {
+        method: "PATCH",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken,
+        }
+      })
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+      
+      document.getElementById("save-button").classList.add("disabled");
+      document.getElementById("save-button-text").innerHTML = "No Changes";
+    } catch (error) {
+      console.error(error.message);
     }
   }
 

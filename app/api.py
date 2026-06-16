@@ -7,13 +7,13 @@ from django_eventstream import send_event
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.filters import OrderingFilter, SearchFilter
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, UpdateAPIView
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 
 from app import sources  # type: ignore
-from app.models import Comic, Genre, Issue, Queue
-from app.serializers import IssueSerializer
+from app.models import Comic, Genre, Issue, Queue, Settings
+from app.serializers import IssueSerializer, SettingsUpdateSerializer
 from app.tasks import downloader
 
 
@@ -31,7 +31,8 @@ def get_discover_data(request):
     except Exception:
         return Response({"error": "Unknown source"}, status=status.HTTP_400_BAD_REQUEST)
 
-    result, error = source_instance.discover()
+    proxy_config = Settings.get_proxy_settings()
+    result, error = source_instance.discover(proxy_config=proxy_config)
 
     if error:
         return Response({"error": error}, status=status.HTTP_400_BAD_REQUEST)
@@ -63,7 +64,8 @@ def search_remote(request):
             {"error": "Source not found"}, status=status.HTTP_400_BAD_REQUEST
         )
 
-    result, error = source_instance.search(query)
+    proxy_config = Settings.get_proxy_settings()
+    result, error = source_instance.search(query, proxy_config=proxy_config)
 
     if error:
         return Response({"error": error}, status=status.HTTP_400_BAD_REQUEST)
@@ -101,7 +103,8 @@ def comic(request):
                 {"error": "Source not found"}, status=status.HTTP_400_BAD_REQUEST
             )
 
-        comic, error = source_instance.get(id)
+        proxy_config = Settings.get_proxy_settings()
+        comic, error = source_instance.get(id, proxy_config=proxy_config)
         if error:
             return Response({"error": error}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -238,3 +241,10 @@ class ListComicIssuesView(ListAPIView):
     def get_queryset(self):
         comic = get_object_or_404(Comic, id=self.kwargs["comic_id"])
         return comic.issues.all()
+
+
+class SettingsUpdateView(UpdateAPIView):
+    serializer_class = SettingsUpdateSerializer
+
+    def get_object(self):
+        return Settings.get_or_create()

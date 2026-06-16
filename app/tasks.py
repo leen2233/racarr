@@ -4,9 +4,10 @@ from celery import shared_task
 from django.core.files.base import File
 from django_eventstream import send_event
 
-from app import sources  # type: ignore
+from app import sources
+from app.types import ProxyConfig  # type: ignore
 
-from .models import Queue
+from .models import Queue, Settings
 
 
 @shared_task(acks_late=True)
@@ -47,7 +48,14 @@ def downloader(queue_id):
             {"queue_id": queue_id, "status": "downloading", "progress": percentage},
         )
 
-    path, error = source_instance.download(queue.issue.remote_id, report_progress)
+    # check settings for proxy
+    proxy_config = Settings.get_proxy_settings()
+
+    path, error = source_instance.download(
+        queue.issue.remote_id,
+        proxy_config=proxy_config,
+        progress_callback=report_progress,
+    )
     if not path:
         queue.set_status_error(error)
         print("Error downloading: ", error)
@@ -62,7 +70,7 @@ def downloader(queue_id):
         send_event(
             "activity",
             "message",
-            {"queue_id": queue_id, "status": "error", "error": error},
+            {"queue_id": queue_id, "status": "error", "error_message": error},
         )
         return
 

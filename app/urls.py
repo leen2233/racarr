@@ -3,6 +3,7 @@ from django.urls import include, path
 
 from .api import (
     ListComicIssuesView,
+    SettingsUpdateView,
     comic,
     delete_queue_item,
     download_issue,
@@ -29,6 +30,7 @@ urlpatterns = [
     path("api/search-all-missing", search_all_missing),
     path("api/retry-queue-item", retry_queue_item),
     path("api/delete-queue-item", delete_queue_item),
+    path("api/settings", SettingsUpdateView.as_view()),
     # Events
     path(
         "api/events/notifications",

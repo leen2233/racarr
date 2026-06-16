@@ -3,13 +3,13 @@ import random
 import re
 import string
 import zipfile
-from typing import Optional, Tuple
+from typing import Callable, Optional, Tuple
 
 from bs4 import BeautifulSoup as BS
 from bs4.element import NavigableString, Tag
 from django.conf import settings
 
-from app.types import Comic, Issue, SearchItem
+from app.types import Comic, Issue, ProxyConfig, SearchItem
 
 from .base import Source
 
@@ -24,7 +24,11 @@ class ReadAllComics(Source):
     NAME = "ReadAllComics"
     BASE_URL = "https://readallcomics.com"
 
-    def search(self, query):
+    def search(self, query, proxy_config):
+        # if proxy_config given, reinitialize cloudscraper with givejn proxy
+        if proxy_config:
+            self._reinitialize_cloudscraper(proxy_config)
+
         params = {"story": query, "s": "", "type": "comic"}
         try:
             res = self._make_request("/", params=params)
@@ -34,7 +38,11 @@ class ReadAllComics(Source):
         result = self._parse_comics_from_response(str(res.content))
         return result
 
-    def discover(self):
+    def discover(self, proxy_config):
+        # if proxy_config given, reinitialize cloudscraper with givejn proxy
+        if proxy_config:
+            self._reinitialize_cloudscraper(proxy_config)
+
         try:
             res = self._make_request("/")
         except Exception as e:
@@ -43,10 +51,14 @@ class ReadAllComics(Source):
         result = self._parse_comics_from_response(res.content)
         return result
 
-    def get(self, id):
+    def get(self, id, proxy_config):
         """
         id: url for comic
         """
+        # if proxy_config given, reinitialize cloudscraper with givejn proxy
+        if proxy_config:
+            self._reinitialize_cloudscraper(proxy_config)
+
         try:
             res = self._make_request(id)
         except Exception as e:
@@ -55,7 +67,13 @@ class ReadAllComics(Source):
         result = self._parse_comic_from_response(res.content, id)
         return result
 
-    def download(self, id, progress):
+    def download(
+        self, id, proxy_config: Optional[ProxyConfig], progress_callback: Callable
+    ):
+        # if proxy_config given, reinitialize cloudscraper with givejn proxy
+        if proxy_config:
+            self._reinitialize_cloudscraper(proxy_config)
+
         try:
             res = self._make_request(id)
         except Exception as e:
@@ -93,7 +111,7 @@ class ReadAllComics(Source):
 
                 if i % 5 == 0:
                     percentage = int(100 / len(image_urls) * i)
-                    progress(percentage)
+                    progress_callback(percentage)
 
         # verify cbz file
         with zipfile.ZipFile(output_path, "r") as archieve:
