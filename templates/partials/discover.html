@@ -1,5 +1,6 @@
 {% load tags %}
-
+{% load static %}
+<div class="jsPath" data-js="{% static 'discover.js' %}"></div>
 <div id="toolbar">
   <p>Source:</p>
   <select id="source">
@@ -7,14 +8,14 @@
     <option value="{{source.id}}" {%if source.selected %} selected {%endif%}>{{source.name}}</option>
     {% endfor %}
   </select>
-  <button class="active" onClick="changeSource()">Search</button>
+  <button class="active" id="changeSource">Search</button>
 </div>
 <div class="loading" id="loading" style="display: none"><div></div><div></div></div>
 <div class="error" id="error" style="display: none">
-  <p>Couldn't fetch discover data. <span id="error-message"></span><br /></p><button onClick="changeSource()">Retry</button>
+  <p>Couldn't fetch discover data. <span id="error-message"></span><br /></p><button id="changeSource">Retry</button>
 </div>
 {% if discover_data %}
-  <div id="discover-container" data-initialized="1">
+  <div id="discover-container" data-initialized="1" data-default-source="{{default_source}}">
     {% for item in discover_data %}
       <div class="discover-item">
         <img src="{{item.cover}}" loading='lazy'>

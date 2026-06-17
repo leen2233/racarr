@@ -7,16 +7,13 @@
     <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
     <script src="{% static 'notifications.js' %}"></script>
     <script src="{% static 'gridjs/gridjs.umd.js' %}"></script>
-    <script src="{% static 'navbar.js' %}"></script>
-    <script src="{% static 'comic_detail.js' %}"></script>
-    <script src="{% static 'discover.js' %}"></script>
-    <script src="{% static 'activity.js' %}"></script>
+    <script src="{% static 'router.js' %}"></script>
     {%block style%}{%endblock%}
   </head>
   <body>
     <div class="header">
       <div class="logo-search">
-        <div onClick="getAndChange('/')"><img src="{% static 'logo.png' %}" width=120 style="cursor:pointer" /></div>
+        <div onClick="navigate('/')"><img src="{% static 'logo.png' %}" width=120 style="cursor:pointer" /></div>
         <div class="search-bar">
           <i class="fa fa-search"></i>
           <input placeholder="Search" />
@@ -27,16 +24,16 @@
     <div class="body">
       <div class="navbar">
         <div class="navbar-group" id="home">
-          <div class="navbar-item" id="home-home" onClick="getAndChange('/')"><i class="fa fa-book" aria-hidden="true"></i><p>Comics</p></div>
-          <div class="navbar-item navbar-child" id="home-add-new" onClick="getAndChange('/add')">Add New</div>
-          <div class="navbar-item navbar-child" id="home-discover" onClick="getAndChange('/discover')">Discover</div>
+          <div class="navbar-item" id="home-home" onClick="navigate('/')"><i class="fa fa-book" aria-hidden="true"></i><p>Comics</p></div>
+          <div class="navbar-item navbar-child" id="home-add-new" onClick="navigate('/add')">Add New</div>
+          <div class="navbar-item navbar-child" id="home-discover" onClick="navigate('/discover')">Discover</div>
         </div>
         <div class="navbar-group" id="activity">
-          <div class="navbar-item" id="activity-activity" onClick="getAndChange('/activity')"><i class="fa fa-clock-o" aria-hidden="true"></i><p>Activity</p></div>
+          <div class="navbar-item" id="activity-activity" onClick="navigate('/activity')"><i class="fa fa-clock-o" aria-hidden="true"></i><p>Activity</p></div>
         </div>
         <div class="navbar-group" id="settings">
-          <div class="navbar-item" id="settings-settings" onClick="getAndChange('/settings')"><i class="fa fa-cogs"></i><p>Settings</p></div>
-          <div class="navbar-item navbar-child" id="settings-general" onClick="getAndChange('/settings')">General</a></div>
+          <div class="navbar-item" id="settings-settings" onClick="navigate('/settings')"><i class="fa fa-cogs"></i><p>Settings</p></div>
+          <div class="navbar-item navbar-child" id="settings-general" onClick="navigate('/settings')">General</a></div>
         </div>
         <div class="navbar-group" id="system">
           <div class="navbar-item" id="system-system"><i class="fa fa-laptop"></i><p>System</p></div>

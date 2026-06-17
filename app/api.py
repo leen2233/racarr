@@ -128,7 +128,17 @@ def comic(request):
 
         # save cover
         try:
-            response = requests.get(comic.cover)
+            # use proxy_config
+            proxy_config = Settings.get_proxy_settings()
+            proxies = {}
+            if proxy_config and proxy_config.host and proxy_config.port:
+                if proxy_config.username and proxy_config.password:
+                    url = f"{proxy_config.username}:{proxy_config.password}@{proxy_config.host}:{proxy_config.port}"
+                else:
+                    url = f"{proxy_config.host}:{proxy_config.port}"
+                proxies = {"http": url, "https": url}
+
+            response = requests.get(comic.cover, proxies=proxies)
             if response.status_code == 200:
                 img_temp = NamedTemporaryFile(delete=True)
                 img_temp.write(response.content)

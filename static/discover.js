@@ -1,24 +1,54 @@
-async function fetchDiscoverData(source) {
-  document.getElementById("loading").style.display = "block";
-  document.getElementById("error").style.display = "none";
-  const container = document.getElementById("discover-container");
-  container.innerHTML = "";
+export function init(container) {
+  bindEvents(container);
+
+  const el = container.querySelector("#discover-container");
+  if (el.dataset.initialized == "1") {
+    return;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  var source = params.get("source");
+  if (!source) {
+    source = el.dataset.defaultSource;
+  }
+
+  fetchDiscoverData(container, source);
+}
+
+export function destroy(container) {
+  container.removeEventListener("click", handleClick);
+}
+
+function bindEvents(container) {
+  container.addEventListener("click", handleClick);
+}
+
+function handleClick(e) {
+  if (e.target.matches("#changeSource")) {
+    changeSource(e.currentTarget);
+  }
+}
+
+async function fetchDiscoverData(container, source) {
+  container.querySelector("#loading").style.display = "block";
+  container.querySelector("#error").style.display = "none";
+  const discover_container = container.querySelector("#discover-container");
+  discover_container.innerHTML = "";
 
   const url = "/api/discover?source=" + source;
   try {
     const response = await fetch(url);
-    document.getElementById("loading").style.display = "none";
-    
+    container.querySelector("#loading").style.display = "none";
+
     const result = await response.json();
 
     if (!response.ok) {
-      document.getElementById("error").style.display = "block";
+      container.querySelector("#error").style.display = "block";
       throw new Error(result.error);
     }
-
-
+    var html = "";
     result.forEach((item) => {
-      container.innerHTML += `
+      html += `
         <div class="discover-item">
           <img src="${item.cover}" loading='lazy'>
           <div>
@@ -32,45 +62,28 @@ async function fetchDiscoverData(source) {
           </div>
         </div>
       `;
-    })
+    });
+    discover_container.innerHTML = html;
   } catch (error) {
-    document.getElementById("error-message").innerHTML = error;
+    container.querySelector("#error-message").innerHTML = error;
     console.error(error);
   }
 }
 
 function formatGenres(value) {
   let text = value[0];
-  for (let i=1; i<value.length; i++){
+  for (let i = 1; i < value.length; i++) {
     text += `, ${value[i]}`;
   }
   return text;
 }
 
-function changeSource() {
-  const source = document.getElementById("source").value
+function changeSource(container) {
+  const source = container.querySelector("#source").value;
   const url = new URL(window.location);
 
   url.searchParams.set("source", source);
   window.history.pushState({}, "", url);
 
-  fetchDiscoverData(source);
+  fetchDiscoverData(container, source);
 }
-
-document.addEventListener("content:loaded", function () {
-  const el = document.getElementById("discover-container");
-  if (!el) return;
-
-  // prevent double render
-  if (el.dataset.initialized === "1") return;
-  el.dataset.initialized = "1";
-
-
-  const params = new URLSearchParams(window.location.search);
-  var source = params.get("source");
-  if (!source){
-    source = el.dataset.defaultSource
-  }
-
-  fetchDiscoverData(source);
-})

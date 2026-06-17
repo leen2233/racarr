@@ -1,10 +1,34 @@
+export function init(container) {
+  bindEvents(container);
+}
+
+export function destroy(container) {
+  container.removeEventListener("click", handleClick);
+}
+
+function bindEvents(container) {
+  container.addEventListener("click", handleClick);
+}
+
+function handleClick(e) {
+  const item = e.target.closest(".search-comic-item");
+  const addButton = e.target.closest("#addComic");
+  if (item) {
+    showAddComicPopup(e.currentTarget, item);
+  } else if (e.target.matches("#closePopup")) {
+    closePopup(e.currentTarget);
+  } else if (addButton) {
+    addComic(e.currentTarget, addButton);
+  }
+}
+
 function formatPopup(data, media_path) {
   return `
 <div id="popup-container">
   <div class="popup">
     <div class='header'>
       <div>${data.name} (${data.year})</div>
-      <i class="fa fa-times" onClick="hidePopup()"></i>
+      <i class="fa fa-times" id="closePopup"></i>
     </div>
     <div class="popup-content">
       <div class="img"><img src="${data.cover}" /></div>
@@ -51,29 +75,36 @@ function formatPopup(data, media_path) {
         Start search for missing issues
         <input type="checkbox" id="search_missing" />
       </div>
-      <button class="active" onClick="addComic('${data.id}')">
+      <button class="active" id="addComic" data-id='${data.id}'>
         <span id="button-text">Add comic</span>
         <div id="button-spinner" style="display: none"></div>
       </button>
     </div>
   </div>
 </div>
-  `
+  `;
 }
 
+async function addComic(container, el) {
+  container.querySelector("#button-text").style.display = "none";
+  container.querySelector("#button-spinner").style.display = "block";
+  const csrfToken = getCookie("csrftoken");
+  const id = el.dataset.id;
 
-async function addComic(id){
-  document.getElementById("button-text").style.display = "none";
-  document.getElementById("button-spinner").style.display = "block";
-  const csrfToken = getCookie("csrftoken")
+  const monitor = container.querySelector("#monitor").value;
+  const format = container.querySelector("#format").value;
+  const volume_folder = container.querySelector("#volume_folder").checked;
+  const tags = container.querySelector("#tags").value;
+  const search_missing = container.querySelector("#search_missing").checked;
 
-  const monitor = document.getElementById("monitor").value;
-  const format  = document.getElementById("format").value;
-  const volume_folder = document.getElementById("volume_folder").checked;
-  const tags = document.getElementById("tags").value;
-  const search_missing = document.getElementById("search_missing").checked;
-
-  const data = {monitor: monitor, format: format, volume_folder: volume_folder, tags: tags, id: id, search_missing: search_missing};
+  const data = {
+    monitor: monitor,
+    format: format,
+    volume_folder: volume_folder,
+    tags: tags,
+    id: id,
+    search_missing: search_missing,
+  };
   try {
     const response = await fetch("/api/comic", {
       method: "POST",
@@ -81,8 +112,8 @@ async function addComic(id){
       headers: {
         "Content-Type": "application/json",
         "X-CSRFToken": csrfToken,
-      }
-    })
+      },
+    });
     if (!response.ok) {
       throw new Error(`Response status: ${response.status}`);
     }
@@ -92,18 +123,15 @@ async function addComic(id){
   } catch (error) {
     console.error(error.message);
   }
-
 }
 
-async function showComicDetailPopup(data, media_path) {
-  const container = document.getElementById("content");
-  container.innerHTML += formatPopup(data, media_path);
+async function showAddComicPopup(container, el) {
+  let data = JSON.parse(el.dataset.item);
+  let mediaPath = el.dataset.mediaPath;
+  container.innerHTML += formatPopup(data, mediaPath);
 }
 
-
-function hidePopup() {
-  const popup = document.getElementById("popup-container");
+function closePopup(container) {
+  const popup = container.querySelector("#popup-container");
   popup.parentNode.removeChild(popup);
 }
-
-

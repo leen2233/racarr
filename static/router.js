@@ -1,23 +1,56 @@
-function getAndChange(url) {
+let currentModules = [];
+
+async function navigate(url) {
   window.history.pushState({}, "", url);
   makeCurrentNavActive();
 
-  fetch(url, {
+  const container = document.getElementById("content");
+  currentModules.forEach((mod) => {
+    mod.destroy?.(container);
+  });
+  currentModules = [];
+
+  // load html
+  const r = await fetch(url, {
     method: "GET",
     headers: {
       "X-Partial-Content": true,
     },
-  })
-    .then((r) => r.text())
-    .then((html) => {
-      document.querySelector("#content").innerHTML = html;
-      document.dispatchEvent(new Event("content:loaded"));
-    });
+  });
+
+  const html = await r.text();
+  container.innerHTML = html;
+
+  const jsPathElems = container.querySelectorAll(".jsPath");
+  const arr = Array.from(jsPathElems);
+  const imports = arr.map(async (jsPathElem) => {
+    const jsPath = jsPathElem.dataset.js;
+    const mod = await import(jsPath);
+    currentModules.push(mod);
+
+    mod.init(container);
+  });
+
+  await Promise.all(imports);
 }
 
 document.addEventListener("DOMContentLoaded", makeCurrentNavActive);
 
-function makeCurrentNavActive() {
+async function makeCurrentNavActive() {
+  // Load js for active page
+  const container = document.querySelector("#content");
+  const jsPathElems = container.querySelectorAll(".jsPath");
+  const arr = Array.from(jsPathElems);
+  const imports = arr.map(async (jsPathElem) => {
+    const jsPath = jsPathElem.dataset.js;
+    const mod = await import(jsPath);
+    currentModules.push(mod);
+
+    mod.init(container);
+  });
+
+  await Promise.all(imports);
+
   // Set current navbar group  active
   let path = window.location.pathname;
 
