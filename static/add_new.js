@@ -72,7 +72,7 @@ async function handleSearch(container) {
 
     result.forEach((item) => {
       html += `
-          <div class="search-comic-item" id="showAddComicPopup" data-item=${JSON.stringify(item)} data-media-path="{{media_path}}">
+          <div class="search-comic-item" id="showAddComicPopup" data-item="${JSON.stringify(item)}" data-media-path="{{media_path}}">
             <img src="${item.cover}" loading='lazy'>
             <div class="search-comic-data">
               <div class="title-row">

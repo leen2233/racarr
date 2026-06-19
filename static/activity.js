@@ -36,7 +36,7 @@ function streamActivityEvent(container) {
 
     source.onmessage = function (event) {
       var data = JSON.parse(event.data);
-      var row = document.querySelector("#" + data.queue_id);
+      var row = container.querySelector("#item" + data.queue_id);
       if (!row) {
         return;
       }
