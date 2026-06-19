@@ -1,4 +1,5 @@
 let currentModules = [];
+let ranInitOnce = false; // to run first init only once
 
 async function navigate(url) {
   window.history.pushState({}, "", url);
@@ -37,20 +38,22 @@ async function navigate(url) {
 document.addEventListener("DOMContentLoaded", makeCurrentNavActive);
 
 async function makeCurrentNavActive() {
-  // Load js for active page
-  const container = document.querySelector("#content");
-  const jsPathElems = container.querySelectorAll(".jsPath");
-  const arr = Array.from(jsPathElems);
-  const imports = arr.map(async (jsPathElem) => {
-    const jsPath = jsPathElem.dataset.js;
-    const mod = await import(jsPath);
-    currentModules.push(mod);
+  if (!ranInitOnce) {
+    // Load js for active page
+    const container = document.querySelector("#content");
+    const jsPathElems = container.querySelectorAll(".jsPath");
+    const arr = Array.from(jsPathElems);
+    const imports = arr.map(async (jsPathElem) => {
+      const jsPath = jsPathElem.dataset.js;
+      const mod = await import(jsPath);
+      currentModules.push(mod);
 
-    mod.init(container);
-  });
+      mod.init(container);
+    });
 
-  await Promise.all(imports);
-
+    await Promise.all(imports);
+    ranInitOnce = true;
+  }
   // Set current navbar group  active
   let path = window.location.pathname;
 

@@ -1,5 +1,9 @@
+{% load static %}
+
+<div class="jsPath" data-js="{%static 'settings.js'%}" />
+
 <div id="toolbar">
-  <div class="toolbar-button disabled" id="save-button" onClick="saveSettings()">
+  <div class="toolbar-button disabled" id="saveChanges">
     <i class="fa fa-floppy-o"></i>
     <p class="title" id="save-button-text">No Changes</p>
   </div>
@@ -10,13 +14,16 @@
   <div class="group-item">
     <p class="title">Use Proxy</p>
     <div class="input-tip">    
-      <input class="input checkbox" type="checkbox" id="useProxy" onChange='valueChanged()' {%if settings.use_proxy%}checked{%endif%}></input>
+      <input class="input checkbox" type="checkbox" id="useProxy" 
+        data-initial={{settings.use_proxy|yesno:"true,false"}}
+        {%if settings.use_proxy%}checked{%endif%}>
+      </input>
     </div>
   </div>
   <div class="group-item">
     <p class="title">Proxy Type</p>
     <div class="input-tip">    
-      <select class="input" id="proxyType" onChange='valueChanged()'>
+      <select class="input" id="proxyType" data-initial="{{settings.proxy_type|default:''}}">
         <option value="" {%if not settings.proxy_type%}selected{%endif%}>None</option>
         <option value="http" {%if settings.proxy_type == "http"%}selected{%endif%}>HTTP</option>
         <option value="socks5" {%if settings.proxy_type == "socks5"%}selected{%endif%}>Socks5</option>
@@ -26,96 +33,31 @@
   <div class="group-item">
     <p class="title">Proxy Host</p>
     <div class="input-tip">    
-      <input class="input" type="text" id='proxyHost' onChange='valueChanged()' {%if settings.proxy_host%} value="{{settings.proxy_host}}" {%endif%}></input>
+      <input class="input" type="text" id='proxyHost' data-initial="{{settings.proxy_host|default:''}}" {%if settings.proxy_host%} value="{{settings.proxy_host}}" {%endif%}></input>
     </div>
   </div>
   <div class="group-item">
     <p class="title">Proxy Port</p>
     <div class="input-tip">    
-      <input class="input" type="text" id='proxyPort' onChange='valueChanged()' {%if settings.proxy_port%} value="{{settings.proxy_port}}" {%endif%}></input>
+      <input class="input" type="text" id='proxyPort' data-initial="{{settings.proxy_port|default:''}}" {%if settings.proxy_port%} value="{{settings.proxy_port}}" {%endif%}></input>
     </div>
   </div>
   <div class="group-item">
     <p class="title">Proxy Username</p>
     <div class="input-tip">
-      <input class="input" type="text" id="proxyUsername" onChange='valueChanged()' {%if settings.proxy_username%} value="{{settings.proxy_username}}" {%endif%}></input>
+      <input class="input" type="text" id="proxyUsername" data-initial="{{settings.proxy_username|default:''}}" {%if settings.proxy_username%} value="{{settings.proxy_username}}" {%endif%}></input>
       <p class="tip">You only need to enter a username and password if one is required. Leave them blank otherwise.</p>
     </div>
   </div>
   <div class="group-item">
     <p class="title">Proxy Password</p>
     <div class="input-tip">
-      <input class="input" type="text" id="proxyPassword" onChange='valueChanged()' {%if settings.proxy_password%} value="{{settings.proxy_password}}" {%endif%}></input>
+      <input class="input" type="text" id="proxyPassword" data-initial="{{settings.proxy_password|default:''}}" {%if settings.proxy_password%} value="{{settings.proxy_password}}" {%endif%}></input>
       <p class="tip">You only need to enter a username and password if one is required. Leave them blank otherwise.</p>
     </div>
   </div>
 </div>
 
 <script>
-  const initialValues = {
-    useProxy: {{settings.use_proxy|yesno:"true,false"}},
-    proxyType: "{{settings.proxy_type|default:''}}",
-    proxyHost: "{{settings.proxy_host|default:''}}",
-    proxyPort: "{{settings.proxy_port|default:''}}",
-    proxyUsername: "{{settings.proxy_username|default:''}}",
-    proxyPassword: "{{settings.proxy_password|default:''}}",
-  }
-
-  var changed = false;
-
-  function valueChanged() {
-    changed = false;
-    Object.keys(initialValues).forEach(key => {
-      const input = document.getElementById(key);
-      var currentValue = input.value;
-      if(key == "useProxy"){
-        currentValue = input.checked;
-      }
-      if (initialValues[key] != currentValue){
-        changed = true;
-      }
-    })
-   
-    if(changed){
-      document.getElementById("save-button").classList.remove("disabled");
-      document.getElementById("save-button-text").innerHTML = "Save";
-    } else {
-      document.getElementById("save-button").classList.add("disabled");
-      document.getElementById("save-button-text").innerHTML = "No Changes";
-    }
-  }
-
-  async function saveSettings() {
-    const csrfToken = getCookie("csrftoken");
-
-    const data = {
-      use_proxy: document.getElementById("useProxy").checked,
-      proxy_type: document.getElementById("proxyType").value,
-      proxy_host: document.getElementById("proxyHost").value,
-      proxy_port: document.getElementById("proxyPort").value,
-      proxy_username: document.getElementById("proxyUsername").value,
-      proxy_password: document.getElementById("proxyPassword").value,
-    };
-
-    try {
-      const response = await fetch("/api/settings", {
-        method: "PATCH",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": csrfToken,
-        }
-      })
-      if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
-      }
-      
-      document.getElementById("save-button").classList.add("disabled");
-      document.getElementById("save-button-text").innerHTML = "No Changes";
-    } catch (error) {
-      console.error(error.message);
-    }
-  }
-
 </script>
 

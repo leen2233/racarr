@@ -1,4 +1,7 @@
 {% load tags %}
+{% load static %}
+
+<div class="jsPath" data-js="{%static 'activity.js'%}" />
 
 <div class="activity-list">
   <table id="activity-table">
@@ -11,23 +14,25 @@
       <th>Actions</th>
     </tr>
   {% for item in queue %}
-    <tr id="{{item.id}}">
+    <tr id="item{{item.id}}">
       <td class="id">{{item.priority}}</td>
       <td class="name">{{item.issue.original_text}}</td>
       <td class="volume">{{item.issue.volume}}</td>
       <td class="issue">{{item.issue.issue|floatformat}}</td>
       <td class="status">
         {{item.status | capfirst}}
-        {% if item.status == "error" and item.status|length > 100 %}
-          <div class="error-message-extended closed">{{item.error_message}}</div>
-        {% else %}
-          <div class="error-message">{{item.error_message}}</div>
+        {% if item.status == "error" %}
+          {% if item.error_message|length > 100 %}
+            <div class="error-message-extended closed">{{item.error_message}}</div>
+          {% else %}
+            <div class="error-message">{{item.error_message}}</div>
+          {% endif %}
         {% endif %}
       </td>
       <td class="actions">
         <div class="actions-container">
-          <i class="fa fa-repeat" id="retry-{{item.id}}" onClick="retryQueueItem({{item.id}})" title="Retry Download"></i>
-          <i class="fa fa-trash" id="delete-{{item.id}}" onClick="deleteQueueItem({{item.id}})" title="Delete Queue Item"></i>
+          <i class="fa fa-repeat" id="retryItem" data-id="{{item.id}}" title="Retry Download"></i>
+          <i class="fa fa-trash" id="deleteItem" data-id="{{item.id}}" title="Delete Queue Item"></i>
         </div>
       </td>
     </tr>
@@ -37,76 +42,4 @@
     <h2 id="search-helper">Queue is empty. Download items to see here.</h2>
   {% endif %}
 </div>
-
-<script>
-  async function retryQueueItem(id) {
-    var icon = document.getElementById(`retry-${id}`);
-    icon.classList.remove("fa-repeat");
-    icon.classList.add("fa-spinner");
-
-    const csrfToken = getCookie("csrftoken")
-    const url = "/api/retry-queue-item";
-    try {
-      const response = await fetch(url, {
-        method: "POST", 
-        body: JSON.stringify({id: id}),
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": csrfToken,
-        }
-      });
-      
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error);
-      }
-
-      icon.classList.remove("fa-spinner");
-      icon.classList.add("fa-repeat");
-    } catch (error){
-      icon.classList.remove("fa-spinner");
-      icon.classList.add("fa-repeat");
-      console.error(error);
-    }
-
-  }
-</script>
-
-<script>
-  async function deleteQueueItem(id) {
-    var icon = document.getElementById(`retry-${id}`);
-    icon.classList.remove("fa-repeat");
-    icon.classList.add("fa-spinner");
-
-    const csrfToken = getCookie("csrftoken")
-    const url = "/api/delete-queue-item";
-    try {
-      const response = await fetch(url, {
-        method: "POST", 
-        body: JSON.stringify({id: id}),
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": csrfToken,
-        }
-      });
-      
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error);
-      }
-
-      var row = document.getElementById(id);
-      row.parentNode.removeChild(row);
-    } catch (error){
-      icon.classList.remove("fa-spinner");
-      icon.classList.add("fa-repeat");
-      console.error(error);
-    }
-
-  }
-</script>
-
-
 

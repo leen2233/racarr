@@ -1,12 +1,14 @@
 {% load tags %}
 {% load static %}
 
+<div class="jsPath" data-js="{%static 'comic_detail.js'%}" />
+
 <div id="toolbar">
-  <div class="toolbar-button" onClick="searchAllMissing({{comic.id}})">
+  <div class="toolbar-button" id="searchAllMissing" data-id="{{comic.id}}">
     <i class="fa fa-search"></i>
     <p class="title">Search Missing</p>
   </div>
-  <div class="toolbar-button" onClick="deleteComic({{comic.id}})">
+  <div class="toolbar-button" id="deleteComic" data-id="{{comic.id}}">
     <i class="fa fa-trash"></i>
     <p class="title">Delete</p>
   </div>
