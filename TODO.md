@@ -14,8 +14,9 @@ HIGH:
 - [x] close activity event on page change
 - [ ] add settings serializer validation and error message
 - [x] functions inside script tags doesnt work when loaded from partial
-- [ ] cache settings to avoid so many hits on database
+- [x] cache settings to avoid so many hits on database
 - [x] use proxy when downloading cover
+- [ ] Split Volumes to seperate comics. Good to fetch metadata too.
 
 ---
 

@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
 from app.helpers import format_size
@@ -53,3 +54,10 @@ class SettingsUpdateSerializer(ModelSerializer):
             "proxy_username",
             "proxy_password",
         ]
+
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+
+        # Delete cache key after update
+        cache.delete(f"settings:proxy")
+        return instance

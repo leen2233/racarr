@@ -172,7 +172,6 @@ def comic(request):
         Issue.objects.bulk_create(issues_to_save)
 
         if search_missing:
-            print("search_missing is true")
             for issue in comic_obj.issues.all():
                 queue, created = Queue.objects.get_or_create(issue=issue)
                 if created:
@@ -190,7 +189,6 @@ def comic(request):
 @api_view(["POST"])
 def download_issue(request):
     id = request.data.get("id")
-    print(id)
     issue = get_object_or_404(Issue, id=id)
 
     queue, _ = Queue.objects.get_or_create(issue=issue)

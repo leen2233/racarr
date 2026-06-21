@@ -1,6 +1,8 @@
 import os
+from dataclasses import asdict
 from typing import Optional
 
+from django.core.cache import cache
 from django.db import models
 
 from app.storage import PreserveSpacesStorage
@@ -131,6 +133,17 @@ class Settings(models.Model):
 
     objects = models.Manager()
 
+    def save(
+        self, *, force_insert=False, force_update=False, using=None, update_fields=None
+    ):
+        cache.delete("settings:proxy")
+        return super().save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields,
+        )
+
     @classmethod
     def get_or_create(cls):
         if cls.objects.count() > 0:
@@ -140,8 +153,13 @@ class Settings(models.Model):
 
     @classmethod
     def get_proxy_settings(cls) -> Optional[ProxyConfig]:
+        cached_data = cache.get("settings:proxy")
+        if cached_data:
+            if cached_data.get("skip_proxy"):
+                return None
+            return ProxyConfig(**cached_data)
+
         settings = cls.get_or_create()
-        proxy = None
         if (
             settings.use_proxy
             and settings.proxy_type
@@ -155,4 +173,8 @@ class Settings(models.Model):
                 username=settings.proxy_username,
                 password=settings.proxy_password,
             )
-        return proxy
+            cache.set("settings:proxy", asdict(proxy), 300)  # cache for 5 minutes
+            return proxy
+
+        cache.set("settings:proxy", {"skip_proxy": True}, 300)
+        return None
