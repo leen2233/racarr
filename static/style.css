@@ -1085,3 +1085,21 @@ button.danger:hover {
 .settings-container .group-item .input.checkbox {
   width: 20px;
 }
+
+.settings-container .error {
+  width: 100% !important;
+  margin-top: 10px !important;
+}
+
+.settings-container .error.hidden {
+  display: none;
+}
+
+.settings-container .group-item .input-tip .error {
+  margin: 0 !important;
+  width: 100% !important;
+  padding: 6px 16px;
+  margin-top: 8px !important;
+  border-radius: 4px;
+  font-size: 13px;
+}

@@ -132,11 +132,10 @@ def comic(request):
             proxy_config = Settings.get_proxy_settings()
             proxies = {}
             if proxy_config and proxy_config.host and proxy_config.port:
-                if proxy_config.username and proxy_config.password:
-                    url = f"{proxy_config.username}:{proxy_config.password}@{proxy_config.host}:{proxy_config.port}"
-                else:
-                    url = f"{proxy_config.host}:{proxy_config.port}"
-                proxies = {"http": url, "https": url}
+                proxies = {
+                    "http": proxy_config.build_url(),
+                    "https": proxy_config.build_url(),
+                }
 
             response = requests.get(comic.cover, proxies=proxies)
             if response.status_code == 200:

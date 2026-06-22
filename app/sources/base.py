@@ -82,11 +82,10 @@ class Source:
 
     def _reinitialize_cloudscraper(self, proxy_config: Optional[ProxyConfig]):
         if proxy_config:
-            if proxy_config.username and proxy_config.password:
-                url = f"{proxy_config.username}:{proxy_config.password}@{proxy_config.host}:{proxy_config.port}"
-            else:
-                url = f"{proxy_config.host}:{proxy_config.port}"
-            proxies = {"http": url, "https": url}
+            proxies = {
+                "http": proxy_config.build_url(),
+                "https": proxy_config.build_url(),
+            }
 
         self.cs.proxies = proxies
         self.cs.trust_env = False

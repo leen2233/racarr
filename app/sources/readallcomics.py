@@ -258,7 +258,6 @@ class ReadAllComics(Source):
                 if not link:
                     continue
 
-                print(link)
                 url = str(link["href"])
                 text = link.text.strip()
 

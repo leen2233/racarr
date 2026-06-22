@@ -10,6 +10,7 @@
 </div>
 
 <div class="settings-container">
+  <p class="error hidden" id="general-error">Please choose correct option.</p>
   <h2 class="group-header">Proxy</h2>
   <div class="group-item">
     <p class="title">Use Proxy</p>
@@ -28,18 +29,21 @@
         <option value="http" {%if settings.proxy_type == "http"%}selected{%endif%}>HTTP</option>
         <option value="socks5" {%if settings.proxy_type == "socks5"%}selected{%endif%}>Socks5</option>
       </select>
+      <p class="error hidden" id="proxyType-error">Please choose correct option.</p>
     </div>
   </div>
   <div class="group-item">
     <p class="title">Proxy Host</p>
     <div class="input-tip">    
       <input class="input" type="text" id='proxyHost' data-initial="{{settings.proxy_host|default:''}}" {%if settings.proxy_host%} value="{{settings.proxy_host}}" {%endif%}></input>
+      <p class="error hidden" id="proxyHost-error">Please choose correct option.</p>
     </div>
   </div>
   <div class="group-item">
     <p class="title">Proxy Port</p>
     <div class="input-tip">    
       <input class="input" type="text" id='proxyPort' data-initial="{{settings.proxy_port|default:''}}" {%if settings.proxy_port%} value="{{settings.proxy_port}}" {%endif%}></input>
+      <p class="error hidden" id="proxyPort-error">Please choose correct option.</p>
     </div>
   </div>
   <div class="group-item">

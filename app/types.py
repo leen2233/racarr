@@ -81,3 +81,12 @@ class ProxyConfig:
     port: str
     username: str
     password: str
+
+    def build_url(self):
+        if self.username and self.password:
+            url = (
+                f"{self.type}://{self.username}:{self.password}@{self.host}:{self.port}"
+            )
+        else:
+            url = f"{self.type}://{self.host}:{self.port}"
+        return url

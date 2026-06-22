@@ -68,8 +68,34 @@ async function saveSettings(container, el) {
         "X-CSRFToken": csrfToken,
       },
     });
+
+    clearErrorMessages(container);
+
     if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`);
+      if (response.status == 400) {
+        let result = await response.json();
+        if (result["non_field_errors"]) {
+          container.querySelector("#general-error").classList.remove("hidden");
+          container.querySelector("#general-error").innerHTML =
+            result["non_field_errors"];
+        }
+        if (result["proxy_host"]) {
+          container
+            .querySelector("#proxyHost-error")
+            .classList.remove("hidden");
+          container.querySelector("#proxyHost-error").innerHTML =
+            result["proxy_host"];
+        }
+        if (result["proxy_port"]) {
+          container
+            .querySelector("#proxyPort-error")
+            .classList.remove("hidden");
+          container.querySelector("#proxyPort-error").innerHTML =
+            result["proxy_port"];
+        }
+      } else {
+        throw new Error(`Response status: ${response.status}`);
+      }
     }
 
     container.querySelector("#saveChanges").classList.add("disabled");
@@ -86,4 +112,12 @@ async function saveSettings(container, el) {
   } catch (error) {
     console.error(error.message);
   }
+}
+
+function clearErrorMessages(container) {
+  let errors = container.querySelectorAll(".settings-container .error");
+  const arr = Array.from(errors);
+  arr.forEach((err) => {
+    err.classList.add("hidden");
+  });
 }
