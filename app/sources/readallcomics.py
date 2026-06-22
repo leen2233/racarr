@@ -26,8 +26,7 @@ class ReadAllComics(Source):
 
     def search(self, query, proxy_config):
         # if proxy_config given, reinitialize cloudscraper with givejn proxy
-        if proxy_config:
-            self._reinitialize_cloudscraper(proxy_config)
+        self._reinitialize_cloudscraper(proxy_config)
 
         params = {"story": query, "s": "", "type": "comic"}
         try:
@@ -40,8 +39,7 @@ class ReadAllComics(Source):
 
     def discover(self, proxy_config):
         # if proxy_config given, reinitialize cloudscraper with givejn proxy
-        if proxy_config:
-            self._reinitialize_cloudscraper(proxy_config)
+        self._reinitialize_cloudscraper(proxy_config)
 
         try:
             res = self._make_request("/")
@@ -56,8 +54,7 @@ class ReadAllComics(Source):
         id: url for comic
         """
         # if proxy_config given, reinitialize cloudscraper with givejn proxy
-        if proxy_config:
-            self._reinitialize_cloudscraper(proxy_config)
+        self._reinitialize_cloudscraper(proxy_config)
 
         try:
             res = self._make_request(id)
@@ -71,9 +68,9 @@ class ReadAllComics(Source):
         self, id, proxy_config: Optional[ProxyConfig], progress_callback: Callable
     ):
         # if proxy_config given, reinitialize cloudscraper with givejn proxy
-        if proxy_config:
-            self._reinitialize_cloudscraper(proxy_config)
+        self._reinitialize_cloudscraper(proxy_config)
 
+        print("getting readallcomics page")
         try:
             res = self._make_request(id)
         except Exception as e:
@@ -85,6 +82,8 @@ class ReadAllComics(Source):
 
         if not image_urls:
             return None, "Couldn't find images from this url"
+
+        print(f"{len(image_urls)} pages found")
 
         # random filename
         output_filename = (
@@ -99,6 +98,7 @@ class ReadAllComics(Source):
                     response.raise_for_status()
                     img_filename = f"{i:03d}.jpg"
                     archieve.writestr(img_filename, response.content)
+                    print(f"downloaded image {i}/{len(image_urls)}")
 
                 except Exception as e:
                     return (

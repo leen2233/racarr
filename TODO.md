@@ -23,12 +23,14 @@ HIGH:
 MEDIUM:
 
 - [x] make sources OPP
+- [ ] extract and cache to show covers of comics at issues list
 - [ ] make logging configurable
 - [ ] settings page
-- [ ] proxy usage
+- [x] proxy usage
 - [ ] load custom font
 - [ ] format conversion
 - [ ] authentication / authorization
+- [ ] navbar search
 
 ---
 
@@ -39,4 +41,4 @@ LOW:
 - [ ] torrent integration
 - [ ] docker build
 - [ ] use variables at css and make design fully customizable
-- [ ] paginaiton and table improvements at activity page
+- [ ] pagination and table improvements at activity page

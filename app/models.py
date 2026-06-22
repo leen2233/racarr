@@ -25,7 +25,10 @@ def cover_path(instance, filename):
 
 def issue_file_path(instance: "Issue", filename: str) -> str:
     ext = os.path.splitext(filename)[1]
-    return f"{instance.comic.name}/Vol {instance.volume}/{instance.comic.name} Vol.{instance.volume} #{instance.issue}{ext}"  # type: ignore
+    issue_number = (
+        int(instance.issue) if int(instance.issue) == instance.issue else instance.issue
+    )
+    return f"{instance.comic.name}/Vol {instance.volume}/{instance.comic.name} Vol.{instance.volume} #{issue_number}{ext}"  # type: ignore
 
 
 class MonitorType(models.TextChoices):
@@ -154,6 +157,7 @@ class Settings(models.Model):
     @classmethod
     def get_proxy_settings(cls) -> Optional[ProxyConfig]:
         cached_data = cache.get("settings:proxy")
+        print("cached data", cached_data)
         if cached_data:
             if cached_data.get("skip_proxy"):
                 return None

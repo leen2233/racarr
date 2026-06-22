@@ -86,6 +86,9 @@ class Source:
                 "http": proxy_config.build_url(),
                 "https": proxy_config.build_url(),
             }
+            self.cs.trust_env = False
+        else:
+            proxies = {}
+            self.cs.trust_env = True
 
         self.cs.proxies = proxies
-        self.cs.trust_env = False

@@ -154,6 +154,8 @@ function initializeIssuesTable(container) {
                            class="fa fa-download download ${cell.id}}"
                            data-id="${cell.id}"></i>`;
             }
+          } else {
+            html += `<a href="${cell.file_url}"><i title="Download Issue To Device" class="fa fa-arrow-circle-down"></i></a>`;
           }
 
           if (cell.source === "readallcomics") {

@@ -43,7 +43,7 @@
       It's easy to add a new comic. <br /> Just write name of the comic you want to add and press Enter or click Search.
     </div>
     
-    <div id="search-comics-container" data-initialized="{%if query%}0{%else%}1{%endif%}"></div>
+    <div id="search-comics-container" data-initialized="{%if query%}0{%else%}1{%endif%}" data-media-path="{{media_path}}"></div>
   {% endif %}
 
   <div class="loading" id="loading" style="display: none"><div></div><div></div></div>

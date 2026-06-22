@@ -21,6 +21,7 @@ class QueueSerializerMinimized(ModelSerializer):
 
 class IssueSerializer(ModelSerializer):
     filesize = SerializerMethodField()
+    file_url = SerializerMethodField()
     queue = SerializerMethodField()
 
     class Meta:
@@ -35,6 +36,7 @@ class IssueSerializer(ModelSerializer):
             "remote_id",
             "source",
             "filesize",
+            "file_url",
             "queue",
         ]
 
@@ -44,6 +46,11 @@ class IssueSerializer(ModelSerializer):
             return format_size(filesize)
         else:
             return 0
+
+    def get_file_url(self, obj):
+        if obj.file:
+            return obj.file.url
+        return None
 
     def get_queue(self, obj):
         if hasattr(obj, "queue"):
@@ -65,9 +72,8 @@ class SettingsUpdateSerializer(ModelSerializer):
 
     def update(self, instance, validated_data):
         instance = super().update(instance, validated_data)
-
         # Delete cache key after update
-        cache.delete(f"settings:proxy")
+        cache.delete("settings:proxy")
         return instance
 
     def validate_proxy_host(self, value):

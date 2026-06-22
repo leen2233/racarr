@@ -69,10 +69,15 @@ async function handleSearch(container) {
     );
     search_container.innerHTML = "";
     var html = "";
+    const mediaPath = search_container.dataset.mediaPath;
 
     result.forEach((item) => {
+      var itemJson = JSON.stringify(item)
+        .replace("'", "&apos;")
+        .replace('"', "&quot;");
+
       html += `
-          <div class="search-comic-item" id="showAddComicPopup" data-item="${JSON.stringify(item)}" data-media-path="{{media_path}}">
+          <div class="search-comic-item" id="showAddComicPopup" data-item='${itemJson}' data-media-path="${mediaPath}">
             <img src="${item.cover}" loading='lazy'>
             <div class="search-comic-data">
               <div class="title-row">
