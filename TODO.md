@@ -17,6 +17,7 @@ HIGH:
 - [x] cache settings to avoid so many hits on database
 - [x] use proxy when downloading cover
 - [ ] Split Volumes to seperate comics. Good to fetch metadata too.
+- [ ] navbar user actions
 
 ---
 
@@ -25,7 +26,7 @@ MEDIUM:
 - [x] make sources OPP
 - [ ] extract and cache to show covers of comics at issues list
 - [ ] make logging configurable
-- [ ] settings page
+- [x] settings page
 - [x] proxy usage
 - [ ] load custom font
 - [ ] format conversion

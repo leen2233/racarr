@@ -28,6 +28,7 @@
         <div class="tag"><i class="fa fa-folder"></i>{{comic.folder_size | format_size}}</div>
         <div class="tag"><i class="fa fa-eye"></i>{{comic.monitor}}</div>
         <div class="tag"><i class="fa fa-file-o"></i>{{comic.format}}</div>
+        <div class="tag"><i class="fa fa-check-circle-o"></i>{{comic.downloaded_count}} / {{comic.total_count}}</div>
         {% if comic.tags %}<div class="tag"><i class="fa fa-tags"></i>{{comic.tags}}</div>{% endif %}
       </div>
       <p class="description">{{comic.description|safe|linebreaksbr}}</p>

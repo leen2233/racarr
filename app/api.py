@@ -5,10 +5,11 @@ from django.core.files.temp import NamedTemporaryFile
 from django.shortcuts import get_object_or_404, reverse
 from django_eventstream import send_event
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import ListAPIView, UpdateAPIView
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from app import sources  # type: ignore
@@ -18,6 +19,7 @@ from app.tasks import downloader
 
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def get_discover_data(request):
     source = request.GET.get("source", sources.default)
 
@@ -48,6 +50,7 @@ def get_discover_data(request):
 
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def search_remote(request):
     query = request.GET.get("query")
     source = request.GET.get("source", sources.default)
@@ -81,6 +84,7 @@ def search_remote(request):
 
 
 @api_view(["POST", "DELETE"])
+@permission_classes([IsAuthenticated])
 def comic(request):
     if request.method == "POST":
         id = request.data.get("id")
@@ -186,6 +190,7 @@ def comic(request):
 
 
 @api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def download_issue(request):
     id = request.data.get("id")
     issue = get_object_or_404(Issue, id=id)
@@ -201,12 +206,13 @@ def download_issue(request):
 
 
 @api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def search_all_missing(request):
     id = request.data.get("id")
     comic = get_object_or_404(Comic, id=id)
 
     new_added_counter = 0
-    for issue in comic.issues.all():
+    for issue in comic.issues.all().order_by("-priority"):
         queue, added = Queue.objects.get_or_create(issue=issue)
         if added:
             new_added_counter += 1
@@ -230,6 +236,7 @@ def retry_queue_item(request):
 
 
 @api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def delete_queue_item(request):
     id = request.data.get("id")
 
@@ -239,6 +246,7 @@ def delete_queue_item(request):
 
 
 class ListComicIssuesView(ListAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = IssueSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = [SearchFilter, OrderingFilter]
@@ -251,6 +259,7 @@ class ListComicIssuesView(ListAPIView):
 
 
 class SettingsUpdateView(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = SettingsUpdateSerializer
 
     def get_object(self):

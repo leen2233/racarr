@@ -1,8 +1,9 @@
 import os
 
 from django.conf import settings
+from django.contrib.auth import authenticate, login
 from django.core.cache import cache
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from app import sources  # type: ignore
 from app.helpers import get_dir_size
@@ -11,6 +12,8 @@ from app.models import Comic, Queue, Settings
 
 # Create your views here.
 def home(request):
+    if not request.user.is_authenticated:
+        return redirect("/login")
     comics = Comic.objects.all()
     for comic in comics:
         comic.total_count = comic.issues.count()
@@ -27,6 +30,8 @@ def home(request):
 
 
 def add_new(request):
+    if not request.user.is_authenticated:
+        return redirect("/login")
     default_source = request.GET.get("source", sources.default)
     query = request.GET.get("query", "")
 
@@ -56,6 +61,8 @@ def add_new(request):
 
 
 def settings_page(request):
+    if not request.user.is_authenticated:
+        return redirect("/login")
     settings = Settings.get_or_create()
 
     context = {"settings": settings}
@@ -67,6 +74,8 @@ def settings_page(request):
 
 
 def discover(request):
+    if not request.user.is_authenticated:
+        return redirect("/login")
     default_source = request.GET.get("source", sources.default)
 
     sources_obj = [
@@ -93,9 +102,13 @@ def discover(request):
 
 
 def comic_detail_page(request, id):
+    if not request.user.is_authenticated:
+        return redirect("/login")
     comic = Comic.objects.get(id=id)
     comic.folder = os.path.join(settings.BASE_DIR, settings.MEDIA_ROOT, comic.name)
     comic.folder_size = get_dir_size(comic.folder)
+    comic.total_count = comic.issues.count()
+    comic.downloaded_count = comic.issues.exclude(file="").exclude(file=None).count()
 
     context = {
         "comic": comic,
@@ -108,6 +121,8 @@ def comic_detail_page(request, id):
 
 
 def activity(request):
+    if not request.user.is_authenticated:
+        return redirect("/login")
     queue = Queue.objects.all()
     context = {"queue": queue}
 
@@ -115,3 +130,17 @@ def activity(request):
         return render(request, "partials/activity.html", context=context)
 
     return render(request, "activity.html", context=context)
+
+
+def login_page(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect("/")
+        else:
+            error = "Incorrect Username or Password"
+            return render(request, "login.html", {"error": error})
+    return render(request, "login.html")

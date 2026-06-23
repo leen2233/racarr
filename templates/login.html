@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login - Racarr</title>
+    <link rel="stylesheet" href="{% static 'login.css' %}" />
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+  </head>
+  <body>
+    <div class="login-container">
+      <h2>Sign in to continue</h2>
+      <form method="POST">
+        {%csrf_token%}
+        <input name="username" placeholder="Username" />
+        <input name="password" placeholder="Password" />
+        <button>Login</button>
+      </form>
+      {%if error%}<div class="error">{{error}}</div>{%endif%}
+    </div>
+  </body>
+</html>

@@ -62,7 +62,7 @@ async function retryQueueItem(container, el) {
 
   const id = el.dataset.id;
   const csrfToken = getCookie("csrftoken");
-  const url = "/api/retry-queue-item";
+  const url = "/api/queue/retry";
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -94,7 +94,7 @@ async function deleteQueueItem(container, el) {
 
   const id = el.dataset.id;
   const csrfToken = getCookie("csrftoken");
-  const url = "/api/delete-queue-item";
+  const url = "/api/queue/delete";
   try {
     const response = await fetch(url, {
       method: "POST",
