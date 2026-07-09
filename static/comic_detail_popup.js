@@ -106,7 +106,7 @@ async function addComic(container, el) {
     search_missing: search_missing,
   };
   try {
-    const response = await fetch("/api/comic", {
+    const response = await fetch("/api/comics", {
       method: "POST",
       body: JSON.stringify(data),
       headers: {

@@ -18,6 +18,7 @@ HIGH:
 - [x] use proxy when downloading cover
 - [ ] Split Volumes to seperate comics. Good to fetch metadata too.
 - [ ] navbar user actions
+- [ ] fix comic delete endpoint
 
 ---
 

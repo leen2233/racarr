@@ -90,11 +90,10 @@ async function deleteComic(container) {
     const id = el.dataset.id;
 
     const csrfToken = getCookie("csrftoken");
-    const url = "/api/comic";
+    const url = "/api/comic/" + id;
     try {
       const response = await fetch(url, {
         method: "DELETE",
-        body: JSON.stringify({ id: id }),
         headers: {
           "Content-Type": "application/json",
           "X-CSRFToken": csrfToken,

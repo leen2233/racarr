@@ -1,26 +1,13 @@
 import django_eventstream
 from django.urls import include, path
+from rest_framework.authtoken.views import obtain_auth_token
 
-from .api import (
-    ListComicIssuesView,
-    SettingsUpdateView,
-    comic,
-    delete_queue_item,
-    download_issue,
-    get_discover_data,
-    retry_queue_item,
-    search_all_missing,
-    search_remote,
-)
-from .views import (
-    activity,
-    add_new,
-    comic_detail_page,
-    discover,
-    home,
-    login_page,
-    settings_page,
-)
+from app.views import (ComicsView, ListComicIssuesView, SettingsUpdateView,
+                       delete_queue_item, download_issue, get_discover_data,
+                       retry_queue_item, search_all_missing, search_remote)
+
+from .views import (activity, add_new, comic_detail_page, discover, home,
+                    login_page, settings_page)
 
 urlpatterns = [
     path("", home, name="home"),
@@ -31,9 +18,10 @@ urlpatterns = [
     path("comic/<str:id>", comic_detail_page, name="comic-detail"),
     path("login", login_page, name="login"),
     # API
+    path("api/login", obtain_auth_token),
     path("api/discover", get_discover_data),
     path("api/search-remote", search_remote),
-    path("api/comic", comic),
+    path("api/comics", ComicsView.as_view()),
     path("api/comic/<str:comic_id>/issues", ListComicIssuesView.as_view()),
     path("api/download-issue", download_issue),
     path("api/search-all-missing", search_all_missing),

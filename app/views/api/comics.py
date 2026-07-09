@@ -7,14 +7,15 @@ from django_eventstream import send_event
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.filters import OrderingFilter, SearchFilter
-from rest_framework.generics import ListAPIView, UpdateAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from app import sources  # type: ignore
 from app.models import Comic, Genre, Issue, Queue, Settings
-from app.serializers import IssueSerializer, SettingsUpdateSerializer
+from app.serializers import ComicSerializer, IssueSerializer
 from app.tasks import downloader
 
 
@@ -83,10 +84,16 @@ def search_remote(request):
     return Response(result_json)
 
 
-@api_view(["POST", "DELETE"])
-@permission_classes([IsAuthenticated])
-def comic(request):
-    if request.method == "POST":
+class ComicsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        query = Comic.objects.all()
+
+        serializer = ComicSerializer(query, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
         id = request.data.get("id")
         source = request.data.get("source", sources.default)
         monitor = request.data.get("monitor", "all")
@@ -182,8 +189,10 @@ def comic(request):
 
         view_comic_url = reverse("comic-detail", args=[comic_obj.id])
         return Response({"status": "success", "url": view_comic_url})
-    elif request.method == "DELETE":
-        id = request.data.get("id")
+
+
+class ComicDetailView(APIView):
+    def delete(self, request, id):
         comic = get_object_or_404(Comic, id=id)
         comic.delete()
         return Response({"status": "success"})
@@ -258,9 +267,3 @@ class ListComicIssuesView(ListAPIView):
         return comic.issues.all()
 
 
-class SettingsUpdateView(UpdateAPIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = SettingsUpdateSerializer
-
-    def get_object(self):
-        return Settings.get_or_create()

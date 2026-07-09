@@ -5,7 +5,7 @@ from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from rest_framework.validators import ValidationError
 
 from app.helpers import format_size
-from app.models import Issue, Queue, Settings
+from app.models import Comic, Issue, Queue, Settings
 
 HOSTNAME_REGEX = (
     r"^(localhost|(?=.{1,253}$)(?!-)(?:[A-Za-z0-9-]{1,63}\.)*[A-Za-z0-9-]{1,63})$"
@@ -17,6 +17,12 @@ class QueueSerializerMinimized(ModelSerializer):
     class Meta:
         model = Queue
         fields = ["status", "priority"]
+
+
+class ComicSerializer(ModelSerializer):
+    class Meta:
+        model = Comic
+        fields = "__all__"
 
 
 class IssueSerializer(ModelSerializer):

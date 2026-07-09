@@ -9,3 +9,5 @@ bs4
 redis
 celery[redis]
 requests[socks]
+daphne
+django-eventstream

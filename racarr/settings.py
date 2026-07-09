@@ -30,6 +30,7 @@ SECRET_KEY = "django-insecure-kxxd2n^um=+&rvts2qiuj@+t^=784zg444o$7*4rg&%25vomb0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "false").lower() == "true"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
 
 REDIS_HOST = os.getenv("REDIS_HOST")
 REDIS_PORT = os.getenv("REDIS_PORT")
@@ -53,6 +54,7 @@ INSTALLED_APPS = [
     "app.apps.appConfig",
     "corsheaders",
     "rest_framework",
+    "rest_framework.authtoken"
 ]
 
 MIDDLEWARE = [
